@@ -1,0 +1,11 @@
+.hover:hover{
+    cursor: pointer;
+}
+
+.btn.badge.rounded-pill span{
+    display: none;
+}
+
+.btn.badge.rounded-pill:active span{
+    display: inline-block;
+}

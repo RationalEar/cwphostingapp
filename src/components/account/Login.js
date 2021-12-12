@@ -36,20 +36,25 @@ function Login(props) {
 		event.preventDefault()
 		const form = {username: username, password: password}
 		
-		window.axios.post( 'authenticate', form )
+		window.axios.post( 'login', form )
 			.then( response => {
 				console.log(response)
 				//SetMessage( "Auth request success", "success" )
-				AuthService.createSession(form.username, response.data.token);
+				AuthService.createSession(form.username, response.data);
 				props.history.push("/")
 			})
 			.catch( ( error, xhr ) => {
 				console.log('This is the response:');
+				console.log('error ', error)
 				if (error.response) {
-					console.log(error.response.data);
-					const msg = error.response.data
-					if( msg === 'INVALID_CREDENTIALS' ){
-						showAlert('Please check your username/password and try again')
+					const response = error.response
+					console.log(error.response);
+					const msg = error.response.message
+					if( response.status === 403){
+						showAlert(response.data.message || 'Please check your username/password and try again')
+					}
+					else if(error.response.status===502){
+						showAlert("Service currently unavailable. Please try again later")
 					}
 					else {
 						showAlert(msg)
@@ -61,8 +66,8 @@ function Login(props) {
 				}
 				else {
 					// Something happened in setting up the request that triggered an Error
-					console.log('Error', error.message);
-					showAlert(error.message)
+					console.log('Error', error);
+					showAlert("Service currently unavailable. Please try again later")
 				}
 				
 			})
@@ -82,7 +87,8 @@ function Login(props) {
 									<div className="p-4 rounded">
 										<div className="text-center">
 											<h3 className="">Sign in</h3>
-											<p>Don't have an account yet? <Link to={'/create-account'}>Sign up here</Link></p>
+											<p className="mb-1">Don't have an account yet? <Link to={'/create-account'}>Sign up here</Link></p>
+											<p>Account not activated? <Link to={'/resend-activation-token'}>Resend activation token here</Link></p>
 										</div>
 										<div className="d-grid">
 											<a className="btn my-4 shadow-sm btn-white" href="#!">
@@ -136,7 +142,7 @@ function Login(props) {
 													</div>
 												</div>
 												<div className="col-md-6 text-end">
-													<a href={'/authentication-forgot-password.html'}>Forgot Password ?</a>
+													<a href={'/forgot-password'}>Forgot Password ?</a>
 												</div>
 												<div className="col-12">
 													<div className="d-grid">

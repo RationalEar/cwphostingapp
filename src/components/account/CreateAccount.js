@@ -33,7 +33,7 @@ function CreateAccount(props) {
 				console.log('This is the response:')
 				if (error.response) {
 					console.log(error.response.data);
-					const msg = error.response.data
+					const msg = error.response.data.message
 					if( msg === 'INVALID_CREDENTIALS' ){
 						showAlert('Please check your username/password and try again')
 					}
@@ -58,7 +58,7 @@ function CreateAccount(props) {
 		firstName: yup.string().required().min(2, 'A name should have at least 2 characters'),
 		lastName: yup.string().required().min(2, 'A name should have at least 2 characters'),
 		email: yup.string().email().required(),
-		username: yup.string().required().min(4, 'A username should have at least 4 characters'),
+		//username: yup.string().required().min(4, 'A username should have at least 4 characters'),
 		password: yup.string().required()
 			.min(8, 'should have at least 8 characters')
 			.matches(/[a-z]+/, 'Must contain at least one lowercase character')
@@ -74,7 +74,6 @@ function CreateAccount(props) {
 			firstName: '',
 			lastName: '',
 			email: '',
-			username: '',
 			password: '',
 			confirmPassword: '',
 			terms: false
@@ -130,12 +129,6 @@ function CreateAccount(props) {
 													<Form.Control type="email" name="email" id="emailAddress" autoComplete="email"
 														   onChange={formik.handleChange} value={formik.values.email} isInvalid={!!formik.errors.email}/>
 													<Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
-												</Form.Group>
-												<Form.Group className="col-12">
-													<label htmlFor="username" className="form-label">Create Username</label>
-													<Form.Control type="text" id="username" autoComplete="username"
-														   onChange={formik.handleChange} value={formik.values.username} isInvalid={!!formik.errors.username}/>
-													<Form.Control.Feedback type="invalid">{formik.errors.username}</Form.Control.Feedback>
 												</Form.Group>
 												<Form.Group controlId="inputChoosePassword" className="col-12">
 													<Form.Label>Create Password</Form.Label>

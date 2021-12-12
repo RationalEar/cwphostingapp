@@ -1,0 +1,46 @@
+.toast-container{
+    z-index: 99;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+.toast-body{
+    background-color: rgba(255,255,255, 0.75);
+}
+
+.progress{
+    height: 3px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+@keyframes timeOut {
+    0% {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    100% {
+        transform-origin: left;
+        transform: scaleX(0);
+
+    }
+}
+
+.progress-bar{
+    width: 100%;
+    animation-name: timeOut;
+    animation-timing-function: linear;
+    animation-direction: normal;
+    animation-duration: 14s;
+    animation-delay: 1s;
+}
+
+.toast:hover .progress-bar{
+    animation-play-state: paused;
+}
+
+.toast-header strong{
+    text-transform: capitalize;
+}
+
+

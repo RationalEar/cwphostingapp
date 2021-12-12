@@ -8,12 +8,17 @@ import AuthService from "./features/auth/AuthService";
 import AuthenticatedRoute from "./features/auth/AuthenticatedRoute";
 import axios from "axios";
 import CreateAccount from "./components/account/CreateAccount";
+import ResendActivationToken from "./components/account/ResendActivationToken";
+import ActivateAccount from "./components/account/ActivateAccount";
+import ResetForgottenPasswordRequest from "./components/account/ResetForgottenPasswordRequest";
+import ResetForgottenPassword from "./components/account/ResetForgottenPassword";
 
 window.axios = axios
 
-window.axios.defaults.baseURL = 'http://localhost:8080'
+window.axios.defaults.baseURL = 'http://cwphost.local.com/api'
 window.axios.defaults.withCredentials = false
 AuthService.setAxiosBearerHeader()
+AuthService.setAxiosResponseInterceptor()
 
 const AppLayout = React.lazy(() => import('./app/layouts/AppLayout') )
 
@@ -31,6 +36,10 @@ function App() {
 				<React.Suspense fallback={loading}>
 					<Switch>
 						<Route exact path="/login" name="Login Page" render={ props => <Login {...props} /> } />
+						<Route exact path="/resend-activation-token" name="Activation Page" render={ props => <ResendActivationToken {...props} /> } />
+						<Route exact path="/forgot-password" name="Forgotten Password Page" render={ props => <ResetForgottenPasswordRequest {...props} /> } />
+						<Route exact path="/user/reset-password/:token" name="Password Reset Page" render={ props => <ResetForgottenPassword {...props} /> } />
+						<Route exact path="/user/confirm-account/:token" name="Activation Page" render={ props => <ActivateAccount {...props} /> } />
 						<Route exact path="/create-account" name="Registration Page" render={ props => <CreateAccount {...props} /> } />
 						<AuthenticatedRoute path="/" name="Dashboard" render={props => <AppLayout {...props}/>}/>
 					</Switch>
