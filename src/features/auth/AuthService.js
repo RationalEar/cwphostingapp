@@ -74,6 +74,8 @@ class AuthService{
 				})
 				.catch(function (error) {
 					console.log(error);
+					console.log("redirect...")
+					window.location.href = window.env.BASE_URL+'/login'
 					return accessToken;
 				})
 		}

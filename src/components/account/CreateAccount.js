@@ -1,18 +1,18 @@
 import React, {useState} from 'react';
 import GuestLayout from "../../app/layouts/GuestLayout";
 // import AuthService from "../../features/auth/AuthService";
-import {Form, Alert, InputGroup} from "react-bootstrap";
+import {Form, Alert, InputGroup, Spinner} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useFormik} from "formik";
 import * as yup from 'yup'
-// import {SetMessage} from "../../helpers/general";
+import './CreateAccount.css'
 
-function CreateAccount(props) {
+function CreateAccount() {
 	
 	const [passwordType, setPasswordType] = useState('password')
 	const [alert, showAlert] = useState(false)
-	
-
+	const [success, setSuccess] = useState(false)
+	const [submitting, setSubmitting] = useState(false)
 
 	const togglePassword = (event) => {
 		event.preventDefault()
@@ -22,14 +22,17 @@ function CreateAccount(props) {
 	}
 	
 	const handleSubmit = (form) => {
-		window.axios.post( 'register', form )
+		setSubmitting(true)
+		window.axios.post( 'user/register', form )
 			.then( response => {
 				console.log(response)
 				// SetMessage( "User account created successfully", "success" )
+				setSuccess(true)
 				showAlert("User account created successfully. Please proceed to login.")
 				//AuthService.createSession(form.username, response.data.token)
 			})
 			.catch( ( error, xhr ) => {
+				setSuccess(false)
 				console.log('This is the response:')
 				if (error.response) {
 					console.log(error.response.data);
@@ -51,6 +54,9 @@ function CreateAccount(props) {
 					showAlert(error.message)
 				}
 				
+			})
+			.finally(()=>{
+				setSubmitting(false)
 			})
 	}
 	
@@ -104,71 +110,75 @@ function CreateAccount(props) {
 										<div className="login-separater text-center mb-4">
 											<span>SIGN UP WITH EMAIL</span>
 											<hr/>
-											{alert && <Alert className="text-start" variant="danger" onClose={() => showAlert(false)} dismissible>
-												<Alert.Heading as={'h5'}>Unable to create account</Alert.Heading>
+											{alert && <Alert className="text-start" variant={success?'success':"danger"} onClose={() => showAlert(false)} dismissible>
+												<Alert.Heading as={'h5'}>{success?'Account created':'Unable to create account'}</Alert.Heading>
 												<p className="mb-0">{alert}</p>
 											</Alert>}
 										</div>
 										<div className="form-body">
 											<Form noValidate className="row g-3" onSubmit={formik.handleSubmit}>
-												<Form.Group className="col-12">
-													<label htmlFor="firstName" className="form-label">First Name</label>
-													<Form.Control id="firstName" name="firstName" type="text"
-														   onChange={formik.handleChange} value={formik.values.firstName}
-														   isInvalid={!!formik.errors.firstName}/>
-													<Form.Control.Feedback type="invalid">{formik.errors.firstName}</Form.Control.Feedback>
-												</Form.Group>
-												<Form.Group className="col-12">
-													<label htmlFor="firstName" className="form-label">Last Name</label>
-													<Form.Control id="lastName" name="lastName" type="text" 
-														   onChange={formik.handleChange} value={formik.values.lastName} isInvalid={!!formik.errors.lastName}/>
-													<Form.Control.Feedback type="invalid">{formik.errors.lastName}</Form.Control.Feedback>
-												</Form.Group>
-												<Form.Group className="col-12">
-													<label htmlFor="emailAddress" className="form-label">Email Address</label>
-													<Form.Control type="email" name="email" id="emailAddress" autoComplete="email"
-														   onChange={formik.handleChange} value={formik.values.email} isInvalid={!!formik.errors.email}/>
-													<Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
-												</Form.Group>
-												<Form.Group controlId="inputChoosePassword" className="col-12">
-													<Form.Label>Create Password</Form.Label>
-													<InputGroup hasValidation id="show_hide_password">
-														<Form.Control type={passwordType} name="password"
-															value={formik.values.password} isInvalid={!!formik.errors.password} onChange={formik.handleChange}
-															autoComplete="new-password"
+												<fieldset disabled={submitting}>
+													<Form.Group className="col-12">
+														<label htmlFor="firstName">First Name</label>
+														<Form.Control id="firstName" name="firstName" type="text"
+															   onChange={formik.handleChange} value={formik.values.firstName}
+															   isInvalid={!!formik.errors.firstName}/>
+														<Form.Control.Feedback type="invalid">{formik.errors.firstName}</Form.Control.Feedback>
+													</Form.Group>
+													<Form.Group className="col-12">
+														<label htmlFor="firstName">Last Name</label>
+														<Form.Control id="lastName" name="lastName" type="text"
+															   onChange={formik.handleChange} value={formik.values.lastName} isInvalid={!!formik.errors.lastName}/>
+														<Form.Control.Feedback type="invalid">{formik.errors.lastName}</Form.Control.Feedback>
+													</Form.Group>
+													<Form.Group className="col-12">
+														<label htmlFor="emailAddress">Email Address</label>
+														<Form.Control type="email" name="email" id="emailAddress" autoComplete="email"
+															   onChange={formik.handleChange} value={formik.values.email} isInvalid={!!formik.errors.email}/>
+														<Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
+													</Form.Group>
+													<Form.Group controlId="inputChoosePassword" className="col-12">
+														<label>Create Password</label>
+														<InputGroup hasValidation id="show_hide_password">
+															<Form.Control type={passwordType} name="password" id={'newPassword'}
+																value={formik.values.password} isInvalid={!!formik.errors.password} onChange={formik.handleChange}
+																autoComplete="new-password"
+															/>
+															<InputGroup.Text className="bg-transparent" onClick={togglePassword}>
+																{passwordType === 'text' ? <i className='bx bx-hide'/> : <i className='bx bx-show'/>}
+															</InputGroup.Text>
+															<Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
+														</InputGroup>
+													</Form.Group>
+													<Form.Group className="col-12">
+														<label htmlFor="inputConfirmPassword" >Confirm Password</label>
+														<Form.Control type="password" name="confirmPassword"
+															   id="inputConfirmPassword" required autoComplete="new-password"
+															   placeholder="Confirm Password" onChange={formik.handleChange}
+															   value={formik.values.confirmPassword} isInvalid={!!formik.errors.confirmPassword}
 														/>
-														<InputGroup.Text className="bg-transparent" onClick={togglePassword}>
-															{passwordType === 'text' ? <i className='bx bx-hide'/> : <i className='bx bx-show'/>}
-														</InputGroup.Text>
-														<Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
-													</InputGroup>
-												</Form.Group>
-												<Form.Group className="col-12">
-													<label htmlFor="inputConfirmPassword" className="form-label">Confirm Password</label>
-													<Form.Control type="password" name="confirmPassword"
-														   id="inputConfirmPassword" required autoComplete="new-password"
-														   placeholder="Confirm Password" onChange={formik.handleChange}
-														   value={formik.values.confirmPassword} isInvalid={!!formik.errors.confirmPassword}
-													/>
-													<Form.Control.Feedback type="invalid">{formik.errors.confirmPassword}</Form.Control.Feedback>
-												</Form.Group>
-												<Form.Group controlId="inputTerms" className="col-12">
-													<Form.Check type="switch" name="terms"
-														id="terms" checked={formik.values.terms}
-														onChange={formik.handleChange} value={1} isInvalid={!!formik.errors.terms}
-														label="I accept the website terms and conditions"
-														feedback="You must agree to the terms before submitting."/>
-												</Form.Group>
-												<div className="col-md-6 text-end">
-													Already have an account? <Link to="/login">Login here</Link>
-												</div>
-												<Form.Group className="col-12">
-													<div className="d-grid">
-														<button type="submit" className="btn btn-primary">
-															<i className="bx bxs-lock-open"/>Create Account
-														</button>
+														<Form.Control.Feedback type="invalid">{formik.errors.confirmPassword}</Form.Control.Feedback>
+													</Form.Group>
+													<Form.Group controlId="inputTerms" className="col-12">
+														<Form.Check type="switch" name="terms"
+															id="terms" checked={formik.values.terms}
+															onChange={formik.handleChange} value={1} isInvalid={!!formik.errors.terms}
+															label="I accept the website terms and conditions"
+															feedback="You must agree to the terms before submitting."/>
+													</Form.Group>
+													<div className="col-md-6 text-end">
+														Already have an account? <Link to="/login">Login here</Link>
 													</div>
-												</Form.Group>
+													<Form.Group className="col-12">
+														<div className="d-grid">
+															<button type="submit" className="btn btn-primary">
+																{submitting ?
+																	<Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true"/> :
+																	<i className="bx bxs-save"/>} Create Account
+															</button>
+														</div>
+													</Form.Group>
+												</fieldset>
 											</Form>
 										</div>
 									</div>

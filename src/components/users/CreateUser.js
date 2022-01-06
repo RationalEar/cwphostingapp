@@ -50,9 +50,7 @@ function CreateUser(props) {
 						<Modal.Header closeButton>
 							<Modal.Title>Create New User Account</Modal.Title>
 						</Modal.Header>
-						<Modal.Body className="p-0 m-0">
-							<div className="card">
-								<div className="card-body">
+						<Modal.Body className="m-0">
 									{ alert && <Alert variant={'warning'} onClose={() => showAlert('')} dismissible>{alert}</Alert> }
 									<fieldset className={'row'}>
 										<legend>User Details</legend>
@@ -108,7 +106,7 @@ function CreateUser(props) {
 																		  if(i >=0 ) arrayHelpers.remove(i)
 																	  }}
 																	  onAdd={() => arrayHelpers.push(role)}>
-															{role.name}
+															{role.alias}
 														</CheckboxPill>
 													))}
 												</BSForm.Group>
@@ -150,9 +148,6 @@ function CreateUser(props) {
 															onChange={handleChange} value={values.address.postCode}/>
 										</BSForm.Group>
 									</fieldset>
-								
-								</div>
-							</div>
 						</Modal.Body>
 						<Modal.Footer style={{borderTop: 'none'}}>
 							{isSubmitting ? <Button variant="primary" disabled>

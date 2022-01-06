@@ -32,20 +32,9 @@ const Sidebar = () => {
 						<div className="menu-title">User Management</div>
 					</a>
 					<ul>
-						<li><NavLink to="/users"><i className="bx bx-right-arrow-alt"/>Users</NavLink>
-						</li>
-						<li><a href={'/app-chat-box.html'}><i className="bx bx-right-arrow-alt"/>Chat Box</a>
-						</li>
-						<li><a href={'/app-file-manager.html'}><i className="bx bx-right-arrow-alt"/>File Manager</a>
-						</li>
-						<li><a href={'/app-contact-list.html'}><i className="bx bx-right-arrow-alt"/>Contatcs</a>
-						</li>
-						<li><a href={'/app-to-do.html'}><i className="bx bx-right-arrow-alt"/>Todo List</a>
-						</li>
-						<li><a href={'/app-invoice.html'}><i className="bx bx-right-arrow-alt"/>Invoice</a>
-						</li>
-						<li><a href={'/app-fullcalender.html'}><i className="bx bx-right-arrow-alt"/>Calendar</a>
-						</li>
+						<li><NavLink to="/users"><i className="bx bx-right-arrow-alt"/>Users</NavLink></li>
+						<li><NavLink to="/roles"><i className="bx bx-right-arrow-alt"/>Roles</NavLink></li>
+						
 					</ul>
 				</li>
 				<li>

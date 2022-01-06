@@ -4,7 +4,7 @@ import {debounce} from "lodash";
 import Pagination from "../common/Pagination";
 import PageLimit from "../common/PageLimit";
 import './Users.css'
-import {Button} from "react-bootstrap";
+import {Button, Spinner} from "react-bootstrap";
 import ViewUser from "./ViewUser";
 import EditUser from "./EditUser";
 import {useDispatch} from "react-redux";
@@ -24,7 +24,7 @@ function Users() {
 				return sortObj;
 			}
 		}
-		return { field: 'created', dir: 'asc' }
+		return { field: 'created', dir: 'desc' }
 	}
 	
 	const history = useHistory()
@@ -36,13 +36,21 @@ function Users() {
 	const [pageOffset, setPageOffset] = useState(query.get('page') || 0)
 	const [totalItems, setTotalItems] = useState(0)
 	const [sort, setSort] = useState(convertSort(query.get('sort')))
-	const [filter, setFilter] = useState('')
+	const [filter, setFilter] = useState(query.get('filter') ||'')
 	const [user, setUser] = useState(null)
+	const [activationTicker, setActivationTicker] = useState({})
+	const [passTicker, setPassTicker] = useState({})
+	const [statusTicker, setStatusTicker] = useState({})
+	const [relevance, setRelevance] = useState(false)
+	const [loading, setLoading] = useState(false)
+	const [fetched, setFetched] = useState(false)
 	
-	const [show, setShow] = useState(false);
-	const [edit, setEdit] = useState(false);
-	const handleClose = () => setShow(false);
-	const handleShow = () => setShow(true);
+	const [show, setShow] = useState(false)
+	const [edit, setEdit] = useState(false)
+	const handleClose = () => {
+		setShow(false)
+	}
+	const handleShow = () => setShow(true)
 	
 	const dispatch = useDispatch()
 	
@@ -50,14 +58,44 @@ function Users() {
 		const list = JSON.parse(JSON.stringify(items))
 		const index = list.findIndex( item => item.id === u.id )
 		if (index >= 0) {
-			list[index] = u
-			setItems(list)
+			setItems( prevState => {
+				prevState[index] = u
+				return prevState
+			})
 		}
 	}
 	
-	const getUsers = useCallback((page=false, limit=false) => {
+	const updateHistory = useCallback((field, value) => {
+		if(value==null || value===''){
+			query.delete(field)
+			if(field==='filter'){
+				query.delete('sort')
+				setSort(convertSort(false))
+			}
+		}
+		else query.set(field, value)
+		const search = query.toString()
+		const page = query.get("page")
+		if(field === 'page' && page===value){
+			// do nothing
+			console.log("field = "+field+", value = "+value)
+		}
+		// else {
+			history.push({
+				pathname: window.location.pathname,
+				search: search
+			})
+			setFetched(false)
+		// }
+	},[history, query])
+	
+	const getUsers = useCallback((limit=false) => {
+		setFetched(true)
+		const search = query.toString()
+		let page = query.get("page")
+		console.log("Query String: ", search)
+		setLoading(true)
 		if(limit===false) limit = pageLimit
-		
 		let sortObj = sort;
 		if( sort && (typeof sort === 'string' || sort instanceof String) ){
 			const exploded = sort.split(':');
@@ -65,23 +103,35 @@ function Users() {
 				sortObj = {field: exploded[0], dir: exploded[1]}
 			}
 		}
-		if(page===false) page = pageOffset
+		if(page===null || page===false) page = pageOffset
 		const params = { page: page, limit: limit, sort: sortObj.field + ':' + sortObj.dir}
 		if(filter) params.filter = filter
+		else setRelevance(false)
 		window.axios.get('users', {params:params})
 			.then(response=>{
 				setItems(response.data.items)
 				setPageCount(response.data.totalPages)
-				setPageOffset(response.data.currentPage)
+				const currentPage = response.data.currentPage <= response.data.totalPages ? response.data.currentPage : 0
+				//updateHistory('page', currentPage)
+				setPageOffset(currentPage)
+				console.log("Current Page = ", currentPage)
+				console.log("Page Offset = ", pageOffset)
 				setTotalItems(response.data.totalItems)
 			})
 			.catch(error=>{
 				const msg = get_axios_error(error)
 				dispatch(setWarning( msg.message ))
 			})
-	},[dispatch, filter, pageLimit, pageOffset, sort])
+			.finally(()=>{
+				setLoading(false)
+			})
+	},[dispatch, filter, pageLimit, pageOffset, sort, updateHistory])
 	
 	const resendActivationToken = (user) => {
+		setActivationTicker((prevState) => ({
+			...prevState,
+			[user.id]: true,
+		}));
 		window.axios.post( 'user/activation-token/resend', {username: user.email} )
 			.then(response => {
 				dispatch(setInfo(response.data.message))
@@ -90,9 +140,19 @@ function Users() {
 				const e = get_axios_error(error)
 				dispatch(setWarning(e.message))
 			})
+			.finally(()=>{
+				setActivationTicker((prevState) => ({
+					...prevState,
+					[user.id]: false,
+				}))
+			})
 	}
 	
 	const sendPasswordResetToken = (user) => {
+		setPassTicker((prevState) => ({
+			...prevState,
+			[user.id]: true,
+		}));
 		window.axios.post( 'user/forgotten-password', {username: user.email} )
 			.then(response => {
 				dispatch(setInfo(response.data.message))
@@ -100,6 +160,12 @@ function Users() {
 			.catch(error => {
 				const e = get_axios_error(error)
 				dispatch(setWarning(e.message))
+			})
+			.finally(()=>{
+				setPassTicker((prevState) => ({
+					...prevState,
+					[user.id]: false,
+				}));
 			})
 	}
 	
@@ -116,6 +182,10 @@ function Users() {
 	},[dispatch])
 	
 	const updateStatus = (id, status) => {
+		setStatusTicker((prevState) => ({
+			...prevState,
+			[id]: true,
+		}));
 		window.axios.put( "users/"+id+"/status", {status: status} )
 			.then(response => {
 				if(response.data.data) onUpdateUser(response.data.data)
@@ -124,6 +194,12 @@ function Users() {
 			.catch(error => {
 				const msg = get_axios_error(error)
 				dispatch(setWarning(msg.message))
+			})
+			.finally(()=>{
+				setStatusTicker((prevState) => ({
+					...prevState,
+					[id]: false,
+				}));
 			})
 	}
 	
@@ -143,11 +219,12 @@ function Users() {
 	}
 	
 	useEffect(()=>{
-		if(pageLimit || sort || filter){
+		if(!fetched){
+			console.log("loaded via useEffect.")
 			getUsers()
 			getRoles()
 		}
-	}, [pageLimit, sort, filter, getUsers, getRoles])
+	}, [getUsers, getRoles, fetched])
 	
 	const viewUser = (u) => {
 		setEdit(false)
@@ -190,15 +267,37 @@ function Users() {
 	}
 	
 	const CreateUserModal = function (){
-		return edit==='new' ? <CreateUser onRefreshUsers={getUsers} onHide={handleClose} show={show} roles={roles} onRefresh={()=>getUsers(pageOffset)} /> : null
+		return edit==='new' ? <CreateUser onRefreshUsers={getUsers} onHide={handleClose} show={show} roles={roles} onRefresh={()=>getUsers()} /> : null
+	}
+	
+	const DateString = (props) => {
+		let date = new Date(props.date)
+		return (
+			date.toLocaleString()
+		)
+	}
+	
+	const isActive = (id) => {
+		if( activationTicker!==undefined && id in activationTicker ) return activationTicker[id]
+		return false
+	}
+	
+	const isResettingPass = (id) => {
+		if( passTicker!==undefined && id in passTicker ) return passTicker[id]
+		return false
+	}
+	
+	const isToggling = (id) => {
+		if( statusTicker!==undefined && id in statusTicker ) return statusTicker[id]
+		return false
 	}
 	
 	const StatusPill = (props) => {
 		if(props.suspended===false) return (
 			<button type={'button'} onClick={()=>updateStatus(props.id, true)}
 					title={"Click to suspend user"}
-				className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase">
-				<i className='bx bxs-circle me-1'/>
+					className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase">
+				{isToggling(props.id) ? <Spinner as="i" animation={"grow"} size={"sm"} aria-hidden="true"/> : <i className='bx bxs-circle me-1'/>}
 				Enabled
 			</button>
 		)
@@ -206,16 +305,10 @@ function Users() {
 		else return (
 			<button type={'button'} onClick={()=>updateStatus(props.id, false)}
 					title={"Click to enable user account"}
-				className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
-				<i className='bx bxs-circle me-1'/>Disabled
+					className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
+				{isToggling(props.id) ? <Spinner as="i" animation={"grow"} size={"sm"} aria-hidden="true"/> : <i className='bx bxs-circle me-1'/>}
+				Disabled
 			</button>
-		)
-	}
-	
-	const DateString = (props) => {
-		let date = new Date(props.date)
-		return (
-			date.toLocaleString()
 		)
 	}
 	
@@ -252,13 +345,24 @@ function Users() {
 					<div className="d-flex order-actions">
 						<Button variant={'light'} className="btn-sm" title="Edit user" onClick={() => editUser(user)}><i className='bx bxs-edit mx-0'/></Button>
 						&nbsp;
-						<Button variant={'light'} className="btn-sm" title="Resend Activation Token Email" onClick={() => resendActivationToken(user)}>
-							<i className='bx bxs-envelope mx-0'/>
-						</Button>
+						{isActive(user.id) ?
+							<Button variant={'light'} className="btn-sm" title="Resend Activation Token Email" disabled>
+								<Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>
+							</Button> :
+							<Button variant={'light'} className="btn-sm" title="Resend Activation Token Email"
+								 onClick={() => resendActivationToken(user)}>
+								<i className={user.activated?'bx bxs-envelope mx-0':'bx bxs-envelope mx-0 text-danger'}/>
+							</Button>
+						}
 						&nbsp;
-						<Button variant={'light'} className="btn-sm" title="Resend Password Reset Email" onClick={() => sendPasswordResetToken(user)}>
-							<i className='bx bxs-key mx-0'/>
-						</Button>
+						{isResettingPass(user.id) ?
+							<Button variant={'light'} className="btn-sm" title="Resend Password Reset Email" disabled>
+								<Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>
+							</Button> :
+							<Button variant={'light'} className="btn-sm" title="Resend Password Reset Email" onClick={() => sendPasswordResetToken(user)}>
+								<i className='bx bxs-key mx-0'/>
+							</Button>
+						}
 						&nbsp;
 						<Button variant={'light'} className="btn-sm" title="Delete user" onClick={() => deleteUser(user)}><i className='bx bxs-trash mx-0'/></Button>
 					</div>
@@ -269,6 +373,9 @@ function Users() {
 	
 	const search = debounce((term)=>{
 		setFilter(term)
+		const filter = query.get("filter")
+		if(!filter) query.set("page", 0)
+		updateHistory("filter", term)
 	}, 800, {trailing: true})
 	
 	const handleSearchChange = (e) => {
@@ -276,18 +383,10 @@ function Users() {
 		search(term)
 	}
 	
-	const updateHistory = (field, value) => {
-		query.set(field, value)
-		const search = query.toString()
-		history.push({
-			pathname: window.location.pathname,
-			search: search
-		})
-	}
-	
 	const handlePageClick = (event) => {
+		console.log('page clicked')
 		updateHistory("page", event.selected)
-		getUsers(event.selected)
+		//getUsers(event.selected)
 	}
 	
 	const updatePageLimit = (l) => {
@@ -306,6 +405,7 @@ function Users() {
 	]
 	
 	const changeSort = (field) => {
+		setRelevance(false)
 		if( field === sort.field ){
 			const dir = sort.dir==='asc' ? 'desc' : 'asc';
 			setSort({ field: field, dir: dir })
@@ -317,10 +417,16 @@ function Users() {
 		}
 	}
 	
+	const searchSort = ()=>{
+		updateHistory( "sort",  "relevance:desc" )
+		setSort({ field: 'relevance', dir: 'desc' })
+		setRelevance(true)
+	}
+	
 	const SortIcon = props => {
 		if(props.sort){
 			if( props.field === sort.field ){
-				const dir = sort.dir==='asc' ? 'bx bx-sort-down' : 'bx bx-sort-up'
+				const dir = sort.dir==='desc' ? 'bx bx-sort-down' : 'bx bx-sort-up'
 				return (
 					<span className="hover" title={'Click to sort by '+props.title} onClick={() => changeSort(props.field)}>
 						{props.title} <i className={'fadeIn animated '+dir} />
@@ -336,6 +442,10 @@ function Users() {
 		else return <span>{props.title}</span>
 	}
 	
+	function reloadPage() {
+		getUsers()
+	}
+	
 	return (
 		<React.Fragment>
 			<Breadcrumbs category={'User Management'} title={'Users'} />
@@ -344,14 +454,20 @@ function Users() {
 					<div className="d-lg-flex align-items-center mb-4 gap-3">
 						<div className="position-relative">
 							<input type="search" className="form-control ps-5 radius-30" placeholder="Search by name/email"
-								onChange={handleSearchChange} onCancel={()=>setFilter(false)} />
+								onChange={handleSearchChange} onCancel={()=>setFilter(false)} defaultValue={filter} />
 							<span className="position-absolute top-50 product-show translate-middle-y">
 								<i className="bx bx-search"/>
 							</span>
 						</div>
-						
+						{filter && <span>
+							<Button type={'button'} variant={'link'} className="btn-sm text-decoration-none" onClick={searchSort}>
+								Sort by relevance {relevance && <i className="bx bx-sort-down"/>}
+							</Button>
+						</span>}
 						<PageLimit setPageLimit={updatePageLimit} pageLimit={pageLimit} />
-						
+						<Button type={'button'} variant={'light'} title="Reload" onClick={reloadPage}>
+							{loading ? <Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>:<span className='bx bx-revision' style={{fontWeight:'bold'}}/>}
+						</Button>
 						<div className="ms-auto">
 							<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createUser}>
 								<i className="bx bxs-plus-square"/>Add New User
@@ -381,12 +497,11 @@ function Users() {
 						</table>
 					</div>
 					
-					<Pagination
+					{pageCount>0?<Pagination
 						handlePageClick={handlePageClick}
 						pageCount={pageCount} pageLimit={pageLimit} pageOffset={pageOffset}
 						totalItems={totalItems} currentItems={items.length}
-					/>
-					<p>Page Offset: {pageOffset}</p>
+					/>:null}
 				</div>
 			</div>
 			

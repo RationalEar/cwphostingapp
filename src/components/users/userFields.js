@@ -1,4 +1,4 @@
-import * as yup from "yup";
+import * as yup from "yup"
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 export const schema = yup.object().shape({
@@ -16,7 +16,13 @@ export const schema = yup.object().shape({
 	roles: yup.array().of(
 		yup.object().shape({
 			id: yup.string().nullable(),
-			name: yup.string()
+			name: yup.string(),
+			alias: yup.string().nullable()
 		})
 	)
-});
+})
+
+export const roleSchema = yup.object().shape({
+	name: yup.string().required().min(2, 'A name should have at least 2 characters'),
+	alias: yup.string().required().min(2, 'A name should have at least 2 characters')
+})

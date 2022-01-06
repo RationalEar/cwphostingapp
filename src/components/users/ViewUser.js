@@ -62,7 +62,7 @@ function ViewUser(props){
 								<h6 className="mb-0">
 									Roles
 								</h6>
-								<span className="text-secondary">{user.roles.map(role => role.name).join(', ')}</span>
+								<span className="text-secondary">{user.roles.map(role => role.alias).join(', ')}</span>
 							</li>
 							<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 								&nbsp;
