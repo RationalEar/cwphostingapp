@@ -3,13 +3,15 @@ import AuthService from "../../features/auth/AuthService";
 import {Dropdown} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {setupUser, switchProfile} from "../../features/auth/ProfileSlice";
+import {NavLink} from "react-router-dom";
 
 function Header(props) {
 	const dispatch = useDispatch()
 	const profile = useSelector((state) => state.profile)
 	const [loadProfile, setLoadProfile] = useState(true)
 	
-	const switchRole = (role) => {
+	const switchRole = (event,role) => {
+		event.preventDefault()
 		dispatch(switchProfile(role))
 	}
 	
@@ -442,7 +444,7 @@ function Header(props) {
 						</ul>
 					</div>
 					<Dropdown className="user-box">
-						<Dropdown.Toggle as={"a"} href={"#"} role="button" className="d-flex align-items-center nav-link dropdown-toggle-nocaret">
+						<Dropdown.Toggle as={"div"} role="button" className="d-flex align-items-center nav-link dropdown-toggle-nocaret">
 							{/*<img src={'/assets/images/avatars/avatar-2.png'} className="user-img" alt="user avatar"/>*/}
 							<h1 className="user-img">
 								<i className="bx bx-user-circle"/>
@@ -453,20 +455,20 @@ function Header(props) {
 							</div>
 						</Dropdown.Toggle>
 						<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-end" data-bs-poper="none">
-							<li><a className="dropdown-item" href="/"><i className="bx bx-user"/><span>Profile</span></a></li>
+							<li><NavLink to={'/profile'} className="dropdown-item"><i className="bx bx-user"/><span>Profile</span></NavLink></li>
 							<li><a className="dropdown-item" href="/"><i className="bx bx-cog"/><span>Settings</span></a></li>
 							<li><a className="dropdown-item" href="/"><i className="bx bx-home-circle"/><span>Dashboard</span></a></li>
 							<li><a className="dropdown-item" href="/"><i className="bx bx-dollar-circle"/><span>Earnings</span></a></li>
 							<li><a className="dropdown-item" href="/"><i className="bx bx-download"/><span>Downloads</span></a></li>
 							<li><div className="dropdown-divider mb-0"/></li>
-							<li>
+							<li className="mt-1">
 								<Dropdown>
-									<Dropdown.Toggle as={'a'} href={'#'} className="dropdown-item">
+									<Dropdown.Toggle as={'span'} role="button" className="dropdown-item">
 										<i className="bx bx-street-view"/><span>Switch View</span>
 									</Dropdown.Toggle>
 									<Dropdown.Menu>
 										{profile.roles.map(role=> {
-											return <Dropdown.Item key={role.name} href={"#"} onClick={() => switchRole(role.name)}>
+											return <Dropdown.Item key={role.name} onClick={(event) => switchRole(event,role.name)}>
 												{role.alias ? role.alias : role.name}
 											</Dropdown.Item>
 										})}

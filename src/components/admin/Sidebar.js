@@ -34,6 +34,7 @@ const Sidebar = () => {
 					<ul>
 						<li><NavLink to="/users"><i className="bx bx-right-arrow-alt"/>Users</NavLink></li>
 						<li><NavLink to="/roles"><i className="bx bx-right-arrow-alt"/>Roles</NavLink></li>
+						<li><NavLink to="/profile"><i className="bx bx-right-arrow-alt"/>My Profile</NavLink></li>
 						
 					</ul>
 				</li>

@@ -1,7 +1,8 @@
 {
-  "name": "cwphostingapp",
+  "name": "payments-tracker-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "",
   "dependencies": {
     "@metismenu/react": "^0.0.2",
     "@reduxjs/toolkit": "^1.6.1",

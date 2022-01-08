@@ -40,7 +40,7 @@ window.env = {
   "INVOCATION_ID": "76303683f01f4282ba78640922280981",
   "SESSION_MANAGER": "local/michael-GP73-Leopard-8RE:@/tmp/.ICE-unix/3401,unix/michael-GP73-Leopard-8RE:/tmp/.ICE-unix/3401",
   "NODE": "/usr/local/bin/node",
-  "npm_package_name": "cwphostingapp",
+  "npm_package_name": "payments-tracker-app",
   "XDG_MENU_PREFIX": "gnome-",
   "XDG_RUNTIME_DIR": "/run/user/1000",
   "DISPLAY": ":0",

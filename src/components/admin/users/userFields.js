@@ -26,3 +26,14 @@ export const roleSchema = yup.object().shape({
 	name: yup.string().required().min(2, 'A name should have at least 2 characters'),
 	alias: yup.string().required().min(2, 'A name should have at least 2 characters')
 })
+
+export const changePasswordSchema = yup.object().shape({
+	currentPassword: yup.string().required(),
+	newPassword: yup.string().required()
+		.min(8, 'should have at least 8 characters')
+		.matches(/[a-z]+/, 'Must contain at least one lowercase character')
+		.matches(/[A-Z]+/, 'Must contain at least one upper case character')
+		.matches(/\d+/, 'Password should contain at least one digit')
+		.matches(/[!@#$%^&{}|?()<>,~_-]/, 'Password should contain at least one special character'),
+	confirmPassword: yup.string().oneOf([yup.ref('newPassword'), null], 'Passwords must match'),
+})

@@ -14,7 +14,6 @@ import ResetForgottenPasswordRequest from "./components/admin/account/ResetForgo
 import ResetForgottenPassword from "./components/admin/account/ResetForgottenPassword";
 
 window.axios = axios
-
 window.axios.defaults.baseURL = window.env.API_URL
 window.axios.defaults.withCredentials = false
 AuthService.setAxiosBearerHeader()
