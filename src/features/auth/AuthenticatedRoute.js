@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import AuthService from "./AuthService";
 import {Redirect, Route} from "react-router-dom";
-import PleaseWait from "../../components/account/PleaseWait";
+import PleaseWait from "../../components/admin/account/PleaseWait";
 
 function AuthenticatedRoute(props) {
 	//const loggedIn = AuthService.isLoggedIn();
@@ -21,13 +21,17 @@ function AuthenticatedRoute(props) {
 			if(!tokenExists) {
 				// check refresh token
 				const refreshToken = AuthService.getRefreshToken()
-				if (!refreshToken) setLoggedIn(false)
+				if (!refreshToken){
+					setLoggedIn(false)
+				}
 				else {
 					// attempt refresh
 					tryRefreshToken()
 				}
 			}
-			else setLoggedIn(tokenExists)
+			else{
+				setLoggedIn(tokenExists)
+			}
 		}
 		else setLoggedIn(AuthService.isLoggedIn)
 	},[loggedIn])
@@ -35,8 +39,12 @@ function AuthenticatedRoute(props) {
 	
 	const tryRefreshToken = async function(){
 		const accessToken = await AuthService.refreshToken()
-		if(accessToken) setLoggedIn(true)
-		else setLoggedIn(false)
+		if(accessToken){
+			setLoggedIn(true)
+		}
+		else{
+			setLoggedIn(false)
+		}
 	}
 	
 	if( loggedIn === true ) return <Route {...props} />

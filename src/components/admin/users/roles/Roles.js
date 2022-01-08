@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
-import Breadcrumbs from "../../misc/Breadcrumbs";
+import Breadcrumbs from "../../../misc/Breadcrumbs";
 import {Button, Spinner} from "react-bootstrap";
-import {get_axios_error} from "../../../helpers/general";
-import {setInfo, setWarning} from "../../../features/notifications/NotificationSlice";
+import {get_axios_error} from "../../../../helpers/general";
+import {setInfo, setWarning} from "../../../../features/notifications/NotificationSlice";
 import {useDispatch} from "react-redux";
 import EditRole from "./EditRole";
 import CreateRole from "./CreateRole";

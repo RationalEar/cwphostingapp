@@ -1,4 +1,4 @@
-import GuestLayout from "../../app/layouts/GuestLayout";
+import GuestLayout from "../../../app/layouts/GuestLayout";
 
 function PleaseWait(props) {
 	return (

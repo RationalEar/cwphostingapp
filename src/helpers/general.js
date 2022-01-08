@@ -8,9 +8,24 @@ export const SetMessage = (message, flag) => {
 export function get_axios_error(error){
 	let msg = '';
 	if (error.response) {
+		const r = error.response
 		console.log("error response:")
 		console.log(error.response)
-		msg = error.response.data.message ? error.response.data.message : error.response.data;
+		msg = r.data.message ? r.data.message : r.data;
+		if(msg===undefined || msg===null || msg===''){
+			switch (r.status){
+				case 403 :
+					msg = "You do not have permission to access this resource"
+					break
+				case 401:
+					msg = "The requested resource could not be found"
+					break
+				default:
+					msg = "Unknown error. The server return error code "+r.status
+					break
+			}
+			
+		}
 	}
 	else if (error.request) {
 		console.log("error request:")

@@ -1,10 +1,10 @@
 import {Button, Modal, Form as BSForm, Alert, Spinner} from "react-bootstrap";
 import React, {useState} from "react";
 import {Formik, Form, FieldArray} from "formik";
-import {get_axios_error} from "../../helpers/general";
+import {get_axios_error} from "../../../helpers/general";
 import {useDispatch} from "react-redux";
-import { setInfo} from "../../features/notifications/NotificationSlice";
-import CheckboxPill from "../input/CheckboxPill";
+import { setInfo} from "../../../features/notifications/NotificationSlice";
+import CheckboxPill from "../../input/CheckboxPill";
 import {schema} from "./userFields";
 
 function CreateUser(props) {

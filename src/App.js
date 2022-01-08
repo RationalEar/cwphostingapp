@@ -3,19 +3,19 @@ import 'core-js/es/map';
 import 'core-js/es/set';
 import 'core-js/es/promise';
 import {BrowserRouter as Router,Route, Switch} from "react-router-dom";
-import Login from "./components/account/Login";
+import Login from "./components/admin/account/Login";
 import AuthService from "./features/auth/AuthService";
 import AuthenticatedRoute from "./features/auth/AuthenticatedRoute";
 import axios from "axios";
-import CreateAccount from "./components/account/CreateAccount";
-import ResendActivationToken from "./components/account/ResendActivationToken";
-import ActivateAccount from "./components/account/ActivateAccount";
-import ResetForgottenPasswordRequest from "./components/account/ResetForgottenPasswordRequest";
-import ResetForgottenPassword from "./components/account/ResetForgottenPassword";
+import CreateAccount from "./components/admin/account/CreateAccount";
+import ResendActivationToken from "./components/admin/account/ResendActivationToken";
+import ActivateAccount from "./components/admin/account/ActivateAccount";
+import ResetForgottenPasswordRequest from "./components/admin/account/ResetForgottenPasswordRequest";
+import ResetForgottenPassword from "./components/admin/account/ResetForgottenPassword";
 
 window.axios = axios
 
-window.axios.defaults.baseURL = 'http://cwphost.local.com/api'
+window.axios.defaults.baseURL = window.env.API_URL
 window.axios.defaults.withCredentials = false
 AuthService.setAxiosBearerHeader()
 AuthService.setAxiosResponseInterceptor()

@@ -2,9 +2,9 @@ import {Button, Form as BSForm, Modal, Spinner} from "react-bootstrap";
 import React from "react";
 import {Formik, Form, FieldArray} from "formik";
 import {useDispatch} from "react-redux";
-import {setError, setInfo} from "../../features/notifications/NotificationSlice";
-import {get_axios_error} from "../../helpers/general";
-import CheckboxPill from "../input/CheckboxPill";
+import {setError, setInfo} from "../../../features/notifications/NotificationSlice";
+import {get_axios_error} from "../../../helpers/general";
+import CheckboxPill from "../../input/CheckboxPill";
 import {schema} from "./userFields";
 
 function EditUser(props){

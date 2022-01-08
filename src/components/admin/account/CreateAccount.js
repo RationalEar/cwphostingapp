@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import GuestLayout from "../../app/layouts/GuestLayout";
+import GuestLayout from "../../../app/layouts/GuestLayout";
 // import AuthService from "../../features/auth/AuthService";
 import {Form, Alert, InputGroup, Spinner} from "react-bootstrap";
 import {Link} from "react-router-dom";

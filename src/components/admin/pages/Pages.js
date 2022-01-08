@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Breadcrumbs from "../misc/Breadcrumbs";
+import Breadcrumbs from "../../misc/Breadcrumbs";
 import {Link} from "react-router-dom";
 import {debounce} from "lodash";
 

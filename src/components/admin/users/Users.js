@@ -1,15 +1,15 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import Breadcrumbs from "../misc/Breadcrumbs";
+import Breadcrumbs from "../../misc/Breadcrumbs";
 import {debounce} from "lodash";
-import Pagination from "../common/Pagination";
-import PageLimit from "../common/PageLimit";
+import Pagination from "../../common/Pagination";
+import PageLimit from "../../common/PageLimit";
 import './Users.css'
 import {Button, Spinner} from "react-bootstrap";
 import ViewUser from "./ViewUser";
 import EditUser from "./EditUser";
 import {useDispatch} from "react-redux";
-import {setInfo, setSuccess, setWarning} from "../../features/notifications/NotificationSlice";
-import {get_axios_error, useQuery} from "../../helpers/general";
+import {setInfo, setSuccess, setWarning} from "../../../features/notifications/NotificationSlice";
+import {get_axios_error, useQuery} from "../../../helpers/general";
 import CreateUser from "./CreateUser";
 import {useHistory} from "react-router-dom";
 
@@ -78,7 +78,7 @@ function Users() {
 		const page = query.get("page")
 		if(field === 'page' && page===value){
 			// do nothing
-			console.log("field = "+field+", value = "+value)
+			// console.log("field = "+field+", value = "+value)
 		}
 		// else {
 			history.push({
@@ -91,9 +91,9 @@ function Users() {
 	
 	const getUsers = useCallback((limit=false) => {
 		setFetched(true)
-		const search = query.toString()
+		// const search = query.toString()
 		let page = query.get("page")
-		console.log("Query String: ", search)
+		// console.log("Query String: ", search)
 		setLoading(true)
 		if(limit===false) limit = pageLimit
 		let sortObj = sort;
@@ -114,18 +114,19 @@ function Users() {
 				const currentPage = response.data.currentPage <= response.data.totalPages ? response.data.currentPage : 0
 				//updateHistory('page', currentPage)
 				setPageOffset(currentPage)
-				console.log("Current Page = ", currentPage)
-				console.log("Page Offset = ", pageOffset)
+				// console.log("Current Page = ", currentPage)
+				// console.log("Page Offset = ", pageOffset)
 				setTotalItems(response.data.totalItems)
 			})
 			.catch(error=>{
 				const msg = get_axios_error(error)
+				console.log(msg)
 				dispatch(setWarning( msg.message ))
 			})
 			.finally(()=>{
 				setLoading(false)
 			})
-	},[dispatch, filter, pageLimit, pageOffset, sort, updateHistory])
+	},[dispatch, filter, pageLimit, pageOffset, query, sort])
 	
 	const resendActivationToken = (user) => {
 		setActivationTicker((prevState) => ({
@@ -220,7 +221,6 @@ function Users() {
 	
 	useEffect(()=>{
 		if(!fetched){
-			console.log("loaded via useEffect.")
 			getUsers()
 			getRoles()
 		}
@@ -331,7 +331,7 @@ function Users() {
 					<StatusPill suspended={user.suspended} id={user.id} />
 				</td>
 				<td>
-					{user.roles.map(role => role.name).join()}
+					{user.roles.map(role => role.alias?role.alias:role.name).join(', ')}
 				</td>
 				<td>
 					<DateString date={user.created} />
@@ -384,7 +384,7 @@ function Users() {
 	}
 	
 	const handlePageClick = (event) => {
-		console.log('page clicked')
+		// console.log('page clicked')
 		updateHistory("page", event.selected)
 		//getUsers(event.selected)
 	}

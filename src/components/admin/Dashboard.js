@@ -1,5 +1,5 @@
 import React from 'react';
-import Breadcrumbs from "./misc/Breadcrumbs";
+import Breadcrumbs from "../misc/Breadcrumbs";
 
 function Dashboard(props) {
 	return (

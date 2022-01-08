@@ -1,8 +1,8 @@
 import React from "react";
-const Dashboard = React.lazy( () => import('../components/Dashboard') )
-const Users = React.lazy( () => import('../components/users/Users') )
-const Roles = React.lazy( () => import('../components/users/roles/Roles') )
-const Pages = React.lazy( () => import('../components/pages/Pages') )
+const Dashboard = React.lazy( () => import('../components/admin/Dashboard') )
+const Users = React.lazy( () => import('../components/admin/users/Users') )
+const Roles = React.lazy( () => import('../components/admin/users/roles/Roles') )
+const Pages = React.lazy( () => import('../components/admin/pages/Pages') )
 
 const routes = [
 	{path: '/', name: 'Dashboard', exact:true, component: Dashboard},

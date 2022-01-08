@@ -1,32 +1,77 @@
 import jwt_decode from "jwt-decode";
 import axios from "axios";
+// import {useDispatch} from "react-redux";
 
 class AuthService{
 	
-	requestIntercepter = null
-	responseIntercepter = null
+	requestInterceptor = null
+	responseInterceptor = null
 	
-	createSession( username, tokens ){
+	// const dispatch = useDispatch()
+	
+	createSession( username, tokens, remember ){
 		const decoded = jwt_decode(tokens.accessToken);
-		console.log("Decoded token: ")
 		console.log(decoded)
 		sessionStorage.setItem( 'user', username )
 		sessionStorage.setItem('accessToken', tokens.accessToken)
 		sessionStorage.setItem('accessExpires', decoded.exp)
-		if(tokens.refreshToken) localStorage.setItem('refreshToken', tokens.refreshToken)
+		if(tokens.refreshToken) sessionStorage.setItem('refreshToken', tokens.refreshToken)
+		
+		if(remember){
+			localStorage.setItem('user', username)
+			if(tokens.refreshToken) localStorage.setItem('refreshToken', tokens.refreshToken)
+		}
+		this.setupProfile(decoded.roles)
 		this.setAxiosBearerHeader()
 		this.setAxiosResponseInterceptor()
+	}
+	
+	setupProfile(roles){
+		if(roles){
+			if(roles.includes('ADMIN') || roles.includes('SUPER_ADMIN')){
+				localStorage.setItem('profile', 'ADMIN')
+			}
+			else if( roles.includes('MANAGER') ){
+				localStorage.setItem('profile', 'MANAGER')
+			}
+			else if( roles.includes('USER') ){
+				localStorage.setItem('profile', 'USER')
+			}
+			else{
+				localStorage.setItem('profile', 'GUEST')
+			}
+		}
+		else{
+			localStorage.setItem('profile', 'GUEST')
+		}
+		return localStorage.getItem('profile')
+	}
+	
+	getProfile(){
+		return localStorage.getItem('profile') || 'GUEST'
+	}
+	
+	setProfile(profile){
+		localStorage.setItem( 'profile', profile )
 	}
 	
 	destroySession(){
 		sessionStorage.removeItem('user')
 		sessionStorage.removeItem('accessToken')
+		sessionStorage.removeItem('refreshToken')
+		localStorage.removeItem('user')
 		localStorage.removeItem('refreshToken')
 	}
 	
+	static checkLocalStorage(key){
+		const value = localStorage.getItem(key)
+		if(value) sessionStorage.setItem(key, value)
+		return value
+	}
+	
 	isLoggedIn(){
-		const user = sessionStorage.getItem('user')
-		const token = sessionStorage.getItem('accessToken')
+		const user = sessionStorage.getItem('user') || AuthService.checkLocalStorage('user')
+		const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('accessToken')
 		return !!(user && token)
 	}
 	
@@ -35,9 +80,7 @@ class AuthService{
 	}
 	
 	getRefreshToken(){
-		let refreshToken = sessionStorage.getItem('refreshToken')
-		if(!refreshToken) refreshToken = localStorage.getItem('refreshToken')
-		return refreshToken
+		return sessionStorage.getItem('refreshToken') || AuthService.checkLocalStorage('refreshToken')
 	}
 	
 	tokenExpired(name, token){
@@ -90,8 +133,8 @@ class AuthService{
 		const token = accessToken ? accessToken : this.getAccessToken()
 		const vm = this
 		if(this.isLoggedIn() && token){
-			if(vm.requestIntercepter != null) window.axios.interceptors.request.eject(vm.requestIntercepter)
-			vm.requestIntercepter = window.axios.interceptors.request.use(function (config) {
+			if(vm.requestInterceptor != null) window.axios.interceptors.request.eject(vm.requestInterceptor)
+			vm.requestInterceptor = window.axios.interceptors.request.use(function (config) {
 				config.headers.authorization = 'Bearer '+token
 				return config;
 			}, function (error) {
@@ -104,8 +147,8 @@ class AuthService{
 	setAxiosResponseInterceptor(){
 		//console.log("Response interceptor set");
 		const vm = this
-		if(vm.responseIntercepter !=null ) window.axios.interceptors.response.eject(vm.responseIntercepter)
-		vm.responseIntercepter = window.axios.interceptors.response.use((response) => {
+		if(vm.responseInterceptor !=null ) window.axios.interceptors.response.eject(vm.responseInterceptor)
+		vm.responseInterceptor = window.axios.interceptors.response.use((response) => {
 			//console.log("Normal response interceptor")
 			return response
 		}, async function (error) {

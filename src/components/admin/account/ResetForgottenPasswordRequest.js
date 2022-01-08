@@ -1,21 +1,15 @@
 import React, {useState} from 'react';
-import GuestLayout from "../../app/layouts/GuestLayout";
+import GuestLayout from "../../../app/layouts/GuestLayout";
 import {Alert} from "react-bootstrap";
-import {Link, useParams} from "react-router-dom";
-import {get_axios_error} from "../../helpers/general";
+import {Link} from "react-router-dom";
 
-function ResetForgottenPassword() {
-	const { token } = useParams();
-	const [password, setPassword] = useState('')
-	const [confirmPassword, setConfirmPassword] = useState('')
+function ResetForgottenPasswordRequest() {
+	
+	const [username, setUsername] = useState('')
 	const [alert, setAlert] = useState({show:false, message:'', variant: 'info', heading: 'Account Activation'})
 	
-	const passwordChanged = (event) => {
-		setPassword(event.target.value)
-	}
-	
-	const confirmPasswordChanged = (event) => {
-		setConfirmPassword(event.target.value)
+	const usernameChanged = (event) => {
+		setUsername(event.target.value)
 	}
 	
 	const showAlert = (message, variant, heading=false) => {
@@ -30,22 +24,37 @@ function ResetForgottenPassword() {
 	
 	const handleSubmit = (event) => {
 		event.preventDefault()
+		const form = {username: username}
 		
-		if(!token) {
-			showAlert("A valid password reset token is required")
-			return false;
-		}
-		
-		const form = {password: password, confirmPassword: confirmPassword, token: token}
-		
-		window.axios.post( 'user/reset-password', form )
+		window.axios.post( 'user/forgotten-password', form )
 			.then( response => {
 				console.log(response)
 				showAlert(response.data.message, 'info')
 			})
 			.catch( ( error ) => {
-				const e = get_axios_error(error);
-				showAlert(e.message, 'danger')
+				console.log('This is the response:');
+				console.log('error ', error)
+				if (error.response) {
+					const response = error.response
+					console.log(response);
+					const msg = response.message
+					if(response.status===502){
+						showAlert( "Service currently unavailable. Please try again later", 'danger')
+					}
+					else {
+						showAlert(msg, 'danger')
+					}
+				}
+				else if (error.request) {
+					console.log(error.request);
+					showAlert('There was a problem connecting to the server.', 'danger')
+				}
+				else {
+					// Something happened in setting up the request that triggered an Error
+					console.log('Error', error);
+					showAlert("Service currently unavailable. Please try again later", 'danger')
+				}
+				
 			})
 	}
 	
@@ -62,32 +71,25 @@ function ResetForgottenPassword() {
 								<div className="card-body">
 									<div className="p-4 rounded">
 										<div className="text-center">
-											<h3 className="">Reset Forgotten Password</h3>
+											<h3 className="">Reset Forgotten Password Request</h3>
 											<p className="mb-1">Already have an account? <Link to={'/login'}>Sign in here</Link></p>
 											<p>Don't have an account yet? <Link to={'/create-account'}>Register here</Link></p>
 										</div>
 										<div className="form-body">
 											<form className="row g-3" onSubmit={handleSubmit}>
 												<div className="login-separater text-center mb-4">
-													<span>Enter your new password below</span>
+													<span>Enter your email address below</span>
 													<hr/>
 													{alert.show && <Alert className="text-start" variant={alert.variant} onClose={() => hideAlert()} dismissible>
-														<Alert.Heading as={'h5'}>Reset Forgotten Password</Alert.Heading>
+														<Alert.Heading as={'h5'}>Reset Forgotten Password Request</Alert.Heading>
 														<p className="mb-0">{alert.message}</p>
 													</Alert>}
 												</div>
 												<div className="col-12">
-													<label htmlFor="inputNewPassword" className="form-label">New Password</label>
-													<input type="password" className="form-control" id="inputNewPassword"
-														   placeholder="New Password" autoComplete="off"
-														   onChange={passwordChanged} value={password} required/>
-												</div>
-												
-												<div className="col-12">
-													<label htmlFor="inputConfirmPassword" className="form-label">Confirm Password</label>
-													<input type="password" className="form-control" id="inputConfirmPassword"
-														   placeholder="Confirm New Password" autoComplete="off"
-														   onChange={confirmPasswordChanged} value={confirmPassword} required/>
+													<label htmlFor="inputEmailAddress" className="form-label">Email Address</label>
+													<input type="email" className="form-control" id="inputEmailAddress"
+														   placeholder="Email Address" autoComplete="username"
+														   onChange={usernameChanged} value={username} required/>
 												</div>
 												
 												<div className="col-12">
@@ -110,4 +112,4 @@ function ResetForgottenPassword() {
 	);
 }
 
-export default ResetForgottenPassword;
+export default ResetForgottenPasswordRequest;

@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react';
 import {Route, Switch} from "react-router-dom";
-import routes from "../helpers/routes";
-const NotFound = React.lazy(()=>import('./misc/NotFound'))
+import routes from "../../helpers/routes";
+const NotFound = React.lazy(()=>import('../misc/NotFound'))
 
 const loading = (
 	<div className="py-5 text-center">

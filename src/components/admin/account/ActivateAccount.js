@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import GuestLayout from "../../app/layouts/GuestLayout";
+import GuestLayout from "../../../app/layouts/GuestLayout";
 import {Alert} from "react-bootstrap";
 import {Link, useParams} from "react-router-dom";
-import {get_axios_error} from "../../helpers/general";
+import {get_axios_error} from "../../../helpers/general";
 
 function ActivateAccount() {
 	const { token } = useParams();

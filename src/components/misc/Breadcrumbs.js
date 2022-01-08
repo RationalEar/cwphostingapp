@@ -15,7 +15,7 @@ function Breadcrumbs(props) {
 					</ol>
 				</nav>
 			</div>
-			<div className="ms-auto">
+			{/*<div className="ms-auto">
 				<div className="btn-group">
 					<button type="button" className="btn btn-primary">Settings</button>
 					<button type="button"
@@ -30,7 +30,7 @@ function Breadcrumbs(props) {
 						<a className="dropdown-item" href="#!">Separated link</a>
 					</div>
 				</div>
-			</div>
+			</div>*/}
 		</div>
 	);
 }

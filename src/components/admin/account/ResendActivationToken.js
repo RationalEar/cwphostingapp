@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import GuestLayout from "../../app/layouts/GuestLayout";
+import GuestLayout from "../../../app/layouts/GuestLayout";
 import {Alert} from "react-bootstrap";
 import {Link} from "react-router-dom";
 

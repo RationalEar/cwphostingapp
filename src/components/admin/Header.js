@@ -1,14 +1,45 @@
-import React from 'react';
-import AuthService from "../features/auth/AuthService";
+import React, {useCallback, useEffect, useState} from 'react';
+import AuthService from "../../features/auth/AuthService";
 import {Dropdown} from "react-bootstrap";
+import {useDispatch, useSelector} from "react-redux";
+import {setupUser, switchProfile} from "../../features/auth/ProfileSlice";
 
 function Header(props) {
+	const dispatch = useDispatch()
+	const profile = useSelector((state) => state.profile)
+	const [loadProfile, setLoadProfile] = useState(true)
+	
+	const switchRole = (role) => {
+		dispatch(switchProfile(role))
+	}
+	
+	const getUserProfile = useCallback(() => {
+		window.axios.get('/profile')
+			.then(response => {
+				if(response.data && response.data.id){
+					dispatch(setupUser(response.data))
+				}
+				else{
+					console.log(response)
+				}
+			})
+			.catch(error=>{
+				console.log(error)
+			})
+	},[dispatch])
 	
 	const logout = (event) => {
 		event.preventDefault()
 		AuthService.destroySession()
 		props.history.push('/login')
 	}
+	
+	useEffect(()=>{
+		if( loadProfile ){
+			setLoadProfile(false)
+			getUserProfile()
+		}
+	},[loadProfile, getUserProfile])
 	
 	return (
 		<header>
@@ -412,26 +443,39 @@ function Header(props) {
 					</div>
 					<Dropdown className="user-box">
 						<Dropdown.Toggle as={"a"} href={"#"} role="button" className="d-flex align-items-center nav-link dropdown-toggle-nocaret">
-							<img src={'/assets/images/avatars/avatar-2.png'} className="user-img" alt="user avatar"/>
+							{/*<img src={'/assets/images/avatars/avatar-2.png'} className="user-img" alt="user avatar"/>*/}
+							<h1 className="user-img">
+								<i className="bx bx-user-circle"/>
+							</h1>
 							<div className="user-info ps-3">
-								<p className="user-name mb-0">Pauline Seitz</p>
-								<p className="designattion mb-0">Web Designer</p>
+								<p className="user-name mb-0">{profile.lastName}</p>
+								<p className="designattion mb-0">{profile.firstName}</p>
 							</div>
 						</Dropdown.Toggle>
 						<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-end" data-bs-poper="none">
-							<li><a className="dropdown-item" href="/"><i className="bx bx-user"/><span>Profile</span></a>
-							</li>
-							<li><a className="dropdown-item" href="/"><i className="bx bx-cog"/><span>Settings</span></a>
-							</li>
-							<li><a className="dropdown-item" href="/"><i className="bx bx-home-circle"/><span>Dashboard</span></a>
-							</li>
-							<li><a className="dropdown-item" href="/"><i className="bx bx-dollar-circle"/><span>Earnings</span></a>
-							</li>
-							<li><a className="dropdown-item" href="/"><i className="bx bx-download"/><span>Downloads</span></a>
+							<li><a className="dropdown-item" href="/"><i className="bx bx-user"/><span>Profile</span></a></li>
+							<li><a className="dropdown-item" href="/"><i className="bx bx-cog"/><span>Settings</span></a></li>
+							<li><a className="dropdown-item" href="/"><i className="bx bx-home-circle"/><span>Dashboard</span></a></li>
+							<li><a className="dropdown-item" href="/"><i className="bx bx-dollar-circle"/><span>Earnings</span></a></li>
+							<li><a className="dropdown-item" href="/"><i className="bx bx-download"/><span>Downloads</span></a></li>
+							<li><div className="dropdown-divider mb-0"/></li>
+							<li>
+								<Dropdown>
+									<Dropdown.Toggle as={'a'} href={'#'} className="dropdown-item">
+										<i className="bx bx-street-view"/><span>Switch View</span>
+									</Dropdown.Toggle>
+									<Dropdown.Menu>
+										{profile.roles.map(role=> {
+											return <Dropdown.Item key={role.name} href={"#"} onClick={() => switchRole(role.name)}>
+												{role.alias ? role.alias : role.name}
+											</Dropdown.Item>
+										})}
+									</Dropdown.Menu>
+								</Dropdown>
+								
 							</li>
 							<li><div className="dropdown-divider mb-0"/></li>
-							<li><a className="dropdown-item" href="/" onClick={logout}><i className="bx bx-log-out-circle"/><span>Logout</span></a>
-							</li>
+							<li><a className="dropdown-item" href="/" onClick={logout}><i className="bx bx-log-out-circle"/><span>Logout</span></a></li>
 						</Dropdown.Menu>
 					</Dropdown>
 					
