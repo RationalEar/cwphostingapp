@@ -3,32 +3,29 @@ import Breadcrumbs from "../../misc/Breadcrumbs";
 import {debounce} from "lodash";
 import Pagination from "../../common/Pagination";
 import PageLimit from "../../common/PageLimit";
-import './Users.css'
+import '../users/Users.css'
 import {Button, Spinner} from "react-bootstrap";
-import ViewUser from "./ViewUser";
-import EditUser from "./EditUser";
 import {useDispatch} from "react-redux";
-import {setInfo, setSuccess, setWarning} from "../../../features/notifications/NotificationSlice";
+import {setInfo, setWarning} from "../../../features/notifications/NotificationSlice";
 import {convertSort, get_axios_error, useQuery} from "../../../helpers/general";
-import CreateUser from "./CreateUser";
 import {useHistory} from "react-router-dom";
+import CreateProperty from "./CreateProperty";
+import EditProperty from "./EditProperty";
+import ViewProperty from "./ViewProperty";
 
-function Users() {
+function Properties() {
 	
 	const history = useHistory()
 	const query = useQuery();
 	const [items, setItems] = useState([])
-	const [roles, setRoles] = useState([])
+	const [statuses, setStatuses] = useState([])
 	const [pageCount, setPageCount] = useState(0)
 	const [pageLimit, setPageLimit] = useState(query.get('limit') || 10 )
 	const [pageOffset, setPageOffset] = useState(query.get('page') || 0)
 	const [totalItems, setTotalItems] = useState(0)
 	const [sort, setSort] = useState(convertSort(query.get('sort')))
 	const [filter, setFilter] = useState(query.get('filter') ||'')
-	const [user, setUser] = useState(null)
-	const [activationTicker, setActivationTicker] = useState({})
-	const [passTicker, setPassTicker] = useState({})
-	const [statusTicker, setStatusTicker] = useState({})
+	const [property, setProperty] = useState(null)
 	const [relevance, setRelevance] = useState(false)
 	const [loading, setLoading] = useState(false)
 	const [fetched, setFetched] = useState(false)
@@ -42,7 +39,7 @@ function Users() {
 	
 	const dispatch = useDispatch()
 	
-	const onUpdateUser = u => {
+	const onUpdateProperty = u => {
 		const list = JSON.parse(JSON.stringify(items))
 		const index = list.findIndex( item => item.id === u.id )
 		if (index >= 0) {
@@ -69,15 +66,15 @@ function Users() {
 			// console.log("field = "+field+", value = "+value)
 		}
 		// else {
-			history.push({
-				pathname: window.location.pathname,
-				search: search
-			})
-			setFetched(false)
+		history.push({
+			pathname: window.location.pathname,
+			search: search
+		})
+		setFetched(false)
 		// }
 	},[history, query])
 	
-	const getUsers = useCallback((limit=false) => {
+	const getProperties = useCallback((limit=false) => {
 		setFetched(true)
 		// const search = query.toString()
 		let page = query.get("page")
@@ -95,7 +92,7 @@ function Users() {
 		const params = { page: page, limit: limit, sort: sortObj.field + ':' + sortObj.dir}
 		if(filter) params.filter = filter
 		else setRelevance(false)
-		window.axios.get('users', {params:params})
+		window.axios.get('properties', {params:params})
 			.then(response=>{
 				setItems(response.data.items)
 				setPageCount(response.data.totalPages)
@@ -116,52 +113,10 @@ function Users() {
 			})
 	},[dispatch, filter, pageLimit, pageOffset, query, sort])
 	
-	const resendActivationToken = (user) => {
-		setActivationTicker((prevState) => ({
-			...prevState,
-			[user.id]: true,
-		}));
-		window.axios.post( 'user/activation-token/resend', {username: user.email} )
-			.then(response => {
-				dispatch(setInfo(response.data.message))
-			})
-			.catch(error => {
-				const e = get_axios_error(error)
-				dispatch(setWarning(e.message))
-			})
-			.finally(()=>{
-				setActivationTicker((prevState) => ({
-					...prevState,
-					[user.id]: false,
-				}))
-			})
-	}
-	
-	const sendPasswordResetToken = (user) => {
-		setPassTicker((prevState) => ({
-			...prevState,
-			[user.id]: true,
-		}));
-		window.axios.post( 'user/forgotten-password', {username: user.email} )
-			.then(response => {
-				dispatch(setInfo(response.data.message))
-			})
-			.catch(error => {
-				const e = get_axios_error(error)
-				dispatch(setWarning(e.message))
-			})
-			.finally(()=>{
-				setPassTicker((prevState) => ({
-					...prevState,
-					[user.id]: false,
-				}));
-			})
-	}
-	
-	const getRoles = useCallback(()=>{
-		window.axios.get("roles")
+	const getStatuses = useCallback(()=>{
+		window.axios.get("properties/statuses")
 			.then(response=>{
-				setRoles(response.data)
+				setStatuses(response.data)
 			})
 			.catch(error=>{
 				const msg = get_axios_error(error)
@@ -170,36 +125,14 @@ function Users() {
 		
 	},[dispatch])
 	
-	const updateStatus = (id, status) => {
-		setStatusTicker((prevState) => ({
-			...prevState,
-			[id]: true,
-		}));
-		window.axios.put( "users/"+id+"/status", {status: status} )
-			.then(response => {
-				if(response.data.data) onUpdateUser(response.data.data)
-				if(response.data.message) dispatch(setSuccess(response.data.message))
-			})
-			.catch(error => {
-				const msg = get_axios_error(error)
-				dispatch(setWarning(msg.message))
-			})
-			.finally(()=>{
-				setStatusTicker((prevState) => ({
-					...prevState,
-					[id]: false,
-				}));
-			})
-	}
-	
-	const deleteUser = (u) => {
-		const yes = window.confirm('Are you sure you want to delete the account '+u.firstName+' '+u.lastName+'?')
+	const deleteProperty = (p) => {
+		const yes = window.confirm('Are you sure you want to delete the property '+p.name+'?')
 		if(yes){
-			window.axios.delete('users', {params: {id: u.id}})
+			window.axios.delete('properties', {params: {id: p.id}})
 				.then(response => {
 					// console.log(response.data)
 					dispatch(setInfo(response.data.message))
-					getUsers()
+					setFetched(false)
 				})
 				.catch(error => {
 					console.log(error)
@@ -209,53 +142,53 @@ function Users() {
 	
 	useEffect(()=>{
 		if(!fetched){
-			getUsers()
-			getRoles()
+			getProperties()
+			getStatuses()
 		}
-	}, [getUsers, getRoles, fetched])
+	}, [getProperties, getStatuses, fetched])
 	
-	const viewUser = (u) => {
+	const viewProperty = (u) => {
 		setModal('view')
-		setUser(u)
+		setProperty(u)
 		handleShow(true)
 	}
 	
-	const editUser = (u) => {
+	const editProperty = (u) => {
 		setModal('edit')
-		setUser(u)
+		setProperty(u)
 		handleShow(true)
 	}
 	
-	const createUser = () => {
+	const createProperty = () => {
 		setModal('new')
 		handleShow(true)
 	}
 	
-	const UserModal = function (){
-		if(user){
+	const PropertyModal = function (){
+		if(property){
 			return (
-				modal==='view' ? <ViewUser user={user} onHide={handleClose} show={show} editUser={editUser} /> : null
+				modal==='view' ? <ViewProperty property={property} onHide={handleClose} show={show} editProperty={editProperty} /> : null
 			)
 		}
 		else return null
 	}
 	
 	const EditModal = function (){
-		if(user){
-			if(user.address===null){
-				user.address = {
+		if(property){
+			if(property.address===null){
+				property.address = {
 					addressLine1: '', addressLine2: '', city: '', country: '', postcode: ''
 				}
 			}
 			return (
-				modal==='edit' ? <EditUser user={user} onHide={handleClose} show={show} updateUser={onUpdateUser} roles={roles} /> : null
+				modal==='edit' ? <EditProperty property={property} onHide={handleClose} show={show} updateProperty={onUpdateProperty} statuses={statuses} /> : null
 			)
 		}
 		else return null
 	}
 	
-	const CreateUserModal = function (){
-		return modal==='new' ? <CreateUser onRefreshUsers={getUsers} onHide={handleClose} show={show} roles={roles} onRefresh={()=>getUsers()} /> : null
+	const CreatePropertyModal = function (){
+		return modal==='new' ? <CreateProperty onHide={handleClose} show={show} statuses={statuses} onRefresh={()=>reloadPage()} /> : null
 	}
 	
 	const DateString = (props) => {
@@ -265,43 +198,8 @@ function Users() {
 		)
 	}
 	
-	const isActive = (id) => {
-		if( activationTicker!==undefined && id in activationTicker ) return activationTicker[id]
-		return false
-	}
-	
-	const isResettingPass = (id) => {
-		if( passTicker!==undefined && id in passTicker ) return passTicker[id]
-		return false
-	}
-	
-	const isToggling = (id) => {
-		if( statusTicker!==undefined && id in statusTicker ) return statusTicker[id]
-		return false
-	}
-	
-	const StatusPill = (props) => {
-		if(props.suspended===false) return (
-			<button type={'button'} onClick={()=>updateStatus(props.id, true)}
-					title={"Click to suspend user"}
-					className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase">
-				{isToggling(props.id) ? <Spinner as="i" animation={"grow"} size={"sm"} aria-hidden="true"/> : <i className='bx bxs-circle me-1'/>}
-				Enabled
-			</button>
-		)
-		
-		else return (
-			<button type={'button'} onClick={()=>updateStatus(props.id, false)}
-					title={"Click to enable user account"}
-					className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
-				{isToggling(props.id) ? <Spinner as="i" animation={"grow"} size={"sm"} aria-hidden="true"/> : <i className='bx bxs-circle me-1'/>}
-				Disabled
-			</button>
-		)
-	}
-	
-	const UserRow = (props) => {
-		const user = props.user
+	const PropertyRow = (props) => {
+		const property = props.property
 		return(
 			<tr>
 				<td>
@@ -310,49 +208,36 @@ function Users() {
 							<input className="form-check-input me-3" type="checkbox" value="" aria-label="..." />
 						</div>
 						<div className="ms-2">
-							<h6 className="mb-0 font-14">{user.id.substr(0,6)}</h6>
+							<h6 className="mb-0 font-14">{property.id.substr(0,6)}</h6>
 						</div>
 					</div>
 				</td>
-				<td>{user.firstName} {user.lastName}</td>
+				<td>{property.name}</td>
 				<td>
-					<StatusPill suspended={user.suspended} id={user.id} />
+					{property.owner?property.owner.firstName+' '+property.owner.lastName :
+					<span className="bg-light-info p-1 d-inline-block rounded" onClick={() => editProperty(property)}>update to <br/>view owner</span> }
+				</td>
+				{/*<td>{property.description}</td>*/}
+				<td>
+					{property.address.addressLine1 ? <p className="mb-0">{property.address.addressLine1}</p> : null}
+					{property.address.addressLine2 ? <p className="mb-0">{property.address.addressLine2}</p> : null}
+					{property.address.city || property.address.country ?
+						<p className="mb-0">{property.address.city}{(property.address.city && property.address.country) && ',' } {property.address.country}</p> : null}
+				</td>
+				<td>{property.status}</td>
+				<td>
+					<DateString date={property.created} />
 				</td>
 				<td>
-					{user.roles.map(role => role.alias?role.alias:role.name).join(', ')}
-				</td>
-				<td>
-					<DateString date={user.created} />
-				</td>
-				<td>
-					<Button className="btn btn-primary btn-sm radius-30 px-4" onClick={() => viewUser(user)}>
+					<Button className="btn btn-primary btn-sm radius-30 px-4" onClick={() => viewProperty(property)}>
 						View Details
 					</Button>
 				</td>
 				<td>
 					<div className="d-flex order-actions">
-						<Button variant={'light'} className="btn-sm" title="Edit user" onClick={() => editUser(user)}><i className='bx bxs-edit mx-0'/></Button>
+						<Button variant={'light'} className="btn-sm" title="Edit property" onClick={() => editProperty(property)}><i className='bx bxs-edit mx-0'/></Button>
 						&nbsp;
-						{isActive(user.id) ?
-							<Button variant={'light'} className="btn-sm" title="Resend Activation Token Email" disabled>
-								<Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>
-							</Button> :
-							<Button variant={'light'} className="btn-sm" title="Resend Activation Token Email"
-								 onClick={() => resendActivationToken(user)}>
-								<i className={user.activated?'bx bxs-envelope mx-0':'bx bxs-envelope mx-0 text-danger'}/>
-							</Button>
-						}
-						&nbsp;
-						{isResettingPass(user.id) ?
-							<Button variant={'light'} className="btn-sm" title="Resend Password Reset Email" disabled>
-								<Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>
-							</Button> :
-							<Button variant={'light'} className="btn-sm" title="Resend Password Reset Email" onClick={() => sendPasswordResetToken(user)}>
-								<i className='bx bxs-key mx-0'/>
-							</Button>
-						}
-						&nbsp;
-						<Button variant={'light'} className="btn-sm" title="Delete user" onClick={() => deleteUser(user)}><i className='bx bxs-trash mx-0'/></Button>
+						<Button variant={'light'} className="btn-sm" title="Delete property" onClick={() => deleteProperty(property)}><i className='bx bxs-trash mx-0'/></Button>
 					</div>
 				</td>
 			</tr>
@@ -374,7 +259,7 @@ function Users() {
 	const handlePageClick = (event) => {
 		// console.log('page clicked')
 		updateHistory("page", event.selected)
-		//getUsers(event.selected)
+		//getProperties(event.selected)
 	}
 	
 	const updatePageLimit = (l) => {
@@ -383,10 +268,12 @@ function Users() {
 	}
 	
 	const tableHeader = [
-		 { field: 'id', title: 'User #', sort: false },
+		{ field: 'id', title: 'Property #', sort: false },
 		{ field: 'name', title: 'Name', sort: true},
+		{ field: 'owner', title: 'Owner', sort: true},
+		// { field: 'description', title: 'Description', sort: true},
+		{ field: 'address', title: 'Address', sort: true},
 		{ field: 'status', title: 'Status', sort: false},
-		{ field: 'roles', title: 'Role', sort: false},
 		{ field: 'created', title: 'Date Created', sort: true },
 		{ field: 'details', title: 'View Details', sort: false},
 		{ field: 'actions', title: 'Actions', sort: false}
@@ -431,18 +318,18 @@ function Users() {
 	}
 	
 	function reloadPage() {
-		getUsers()
+		setFetched(false)
 	}
 	
 	return (
 		<React.Fragment>
-			<Breadcrumbs category={'User Management'} title={'Users'} />
+			<Breadcrumbs category={'Property Management'} title={'Properties'} />
 			<div className="card">
 				<div className="card-body">
 					<div className="d-lg-flex align-items-center mb-4 gap-3">
 						<div className="position-relative">
 							<input type="search" className="form-control ps-5 radius-30" placeholder="Search by name/email"
-								onChange={handleSearchChange} onCancel={()=>setFilter(false)} defaultValue={filter} />
+								   onChange={handleSearchChange} onCancel={()=>setFilter(false)} defaultValue={filter} />
 							<span className="position-absolute top-50 product-show translate-middle-y">
 								<i className="bx bx-search"/>
 							</span>
@@ -457,8 +344,8 @@ function Users() {
 							{loading ? <Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>:<span className='bx bx-revision' style={{fontWeight:'bold'}}/>}
 						</Button>
 						<div className="ms-auto">
-							<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createUser}>
-								<i className="bx bxs-plus-square"/>Add New User
+							<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createProperty}>
+								<i className="bx bxs-plus-square"/>Add New Property
 							</button>
 						</div>
 					</div>
@@ -476,9 +363,9 @@ function Users() {
 							</tr>
 							</thead>
 							<tbody>
-							{items.map(user => {
+							{items.map(property => {
 								return (
-									<UserRow user={user} key={user.id}/>
+									<PropertyRow property={property} key={property.id}/>
 								)
 							})}
 							</tbody>
@@ -493,11 +380,11 @@ function Users() {
 				</div>
 			</div>
 			
-			<UserModal />
+			<PropertyModal />
 			<EditModal />
-			<CreateUserModal />
+			<CreatePropertyModal />
 		</React.Fragment>
 	);
 }
 
-export default Users;
+export default Properties;

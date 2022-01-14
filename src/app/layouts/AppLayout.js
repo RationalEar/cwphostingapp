@@ -8,6 +8,7 @@ import AuthService from "../../features/auth/AuthService";
 import {useDispatch, useSelector} from "react-redux";
 import {switchProfile} from "../../features/auth/ProfileSlice";
 import {Button} from "react-bootstrap";
+import {manualToggle} from "../../features/General";
 
 function AppLayout(props) {
 	
@@ -32,7 +33,7 @@ function AppLayout(props) {
 				<Sidebar/>
 				<Header {...props} />
 				<MainContent/>
-				<div className="overlay toggle-icon"/>
+				<div className="overlay toggle-icon" onClick={()=>dispatch(manualToggle())}/>
 				<Footer/>
 				<Notifications/>
 			</React.Fragment>

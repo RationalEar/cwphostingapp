@@ -12,6 +12,7 @@ import ResendActivationToken from "./components/admin/account/ResendActivationTo
 import ActivateAccount from "./components/admin/account/ActivateAccount";
 import ResetForgottenPasswordRequest from "./components/admin/account/ResetForgottenPasswordRequest";
 import ResetForgottenPassword from "./components/admin/account/ResetForgottenPassword";
+import {useSelector} from "react-redux";
 
 window.axios = axios
 window.axios.defaults.baseURL = window.env.API_URL
@@ -29,8 +30,11 @@ const loading = (
 	</div>)
 
 function App() {
+	
+	const general = useSelector((state) => state.general)
+	
 	return (
-		<div className="wrapper">
+		<div className={general.wrapperToggled?'wrapper toggled':'wrapper'}>
 			<Router>
 				<React.Suspense fallback={loading}>
 					<Switch>

@@ -4,6 +4,7 @@ import {Dropdown} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {setupUser, switchProfile} from "../../features/auth/ProfileSlice";
 import {NavLink} from "react-router-dom";
+import {mobileToggle} from "../../features/General";
 
 function Header(props) {
 	const dispatch = useDispatch()
@@ -47,8 +48,7 @@ function Header(props) {
 		<header>
 			<div className="topbar d-flex align-items-center">
 				<nav className="navbar navbar-expand">
-					<div className="mobile-toggle-menu"><i className='bx bx-menu'/>
-					</div>
+					<div className="mobile-toggle-menu" onClick={()=>dispatch(mobileToggle())}><i className='bx bx-menu'/></div>
 					<div className="top-menu-left d-none d-lg-block">
 						<ul className="nav">
 							<li className="nav-item">

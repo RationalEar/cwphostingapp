@@ -59,3 +59,15 @@ export function useQuery() {
 	const { search } = useLocation();
 	return React.useMemo(() => new URLSearchParams(search), [search]);
 }
+
+export const convertSort = (data) => {
+	let sortObj = data;
+	if( data && (typeof data === 'string' || data instanceof String) ){
+		const exploded = data.split(':');
+		if(exploded && exploded.length > 1){
+			sortObj = {field: exploded[0], dir: exploded[1]}
+			return sortObj;
+		}
+	}
+	return { field: 'created', dir: 'desc' }
+}

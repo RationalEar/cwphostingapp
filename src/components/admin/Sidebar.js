@@ -1,11 +1,14 @@
 import React from 'react';
-// import 'simplebar/dist/simplebar.min.css';
 import SimpleBar from "simplebar-react";
 import MetisMenu from "@metismenu/react";
 import {NavLink} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {hoverClose, hoverOpen, manualToggle} from "../../features/General";
 const Sidebar = () => {
+	const dispatch = useDispatch()
+	const general = useSelector((state)=>state.general)
 	return (
-		<SimpleBar forceVisible="y"  autoHide={false} className="sidebar-wrapper">
+		<SimpleBar forceVisible="y"  autoHide={false}className="sidebar-wrapper" onMouseEnter={()=>dispatch(hoverOpen())} onMouseLeave={()=>dispatch(hoverClose())} >
 			<div className="sidebar-header">
 				<div>
 					<img src={'/assets/images/logo-icon.png'} className="logo-icon" alt="logo icon"/>
@@ -15,7 +18,8 @@ const Sidebar = () => {
 						<NavLink to={'/'}>AppAdmin</NavLink>
 					</h4>
 				</div>
-				<div className="toggle-icon ms-auto"><i className='bx bx-first-page'/>
+				<div className="toggle-icon ms-auto" onClick={()=>dispatch(manualToggle())}>
+					<i className={general.manualToggled?'bx bx-last-page':'bx bx-first-page'}/>
 				</div>
 			</div>
 			<MetisMenu className="metismenu" id="menu">
@@ -24,6 +28,29 @@ const Sidebar = () => {
 						<div className="parent-icon"><i className='bx bx-home'/></div>
 						<div className="menu-title">Dashboard</div>
 					</NavLink>
+				</li>
+				<li>
+					<a href={'#!'} className="has-arrow">
+						<div className="parent-icon"><i className='bx bx-building-house'/>
+						</div>
+						<div className="menu-title">Property Management</div>
+					</a>
+					<ul>
+						<li><NavLink to="/properties"><i className="bx bx-right-arrow-alt"/>Properties</NavLink>
+						</li>
+						<li><a href={'/app-chat-box.html'}><i className="bx bx-right-arrow-alt"/>Articles</a>
+						</li>
+						<li><a href={'/app-file-manager.html'}><i className="bx bx-right-arrow-alt"/>File Manager</a>
+						</li>
+						<li><a href={'/app-contact-list.html'}><i className="bx bx-right-arrow-alt"/>Contatcs</a>
+						</li>
+						<li><a href={'/app-to-do.html'}><i className="bx bx-right-arrow-alt"/>Todo List</a>
+						</li>
+						<li><a href={'/app-invoice.html'}><i className="bx bx-right-arrow-alt"/>Invoice</a>
+						</li>
+						<li><a href={'/app-fullcalender.html'}><i className="bx bx-right-arrow-alt"/>Calendar</a>
+						</li>
+					</ul>
 				</li>
 				<li>
 					<a href={'#!'} className="has-arrow">
