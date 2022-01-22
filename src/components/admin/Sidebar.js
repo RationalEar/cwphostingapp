@@ -30,19 +30,31 @@ const Sidebar = () => {
 					</NavLink>
 				</li>
 				<li>
+					<NavLink to="/leases" >
+						<div className="parent-icon"><i className='bx bxs-file'/></div>
+						<div className="menu-title">Leases</div>
+					</NavLink>
+				</li>
+				<li>
+					<NavLink to="/properties" >
+						<div className="parent-icon"><i className='bx bx-building-house'/></div>
+						<div className="menu-title">Properties</div>
+					</NavLink>
+				</li>
+				{/*<li>
 					<a href={'#!'} className="has-arrow">
 						<div className="parent-icon"><i className='bx bx-building-house'/>
 						</div>
 						<div className="menu-title">Property Management</div>
 					</a>
 					<ul>
+						<li><NavLink to="/leases"><i className="bx bx-right-arrow-alt"/>Leases</NavLink></li>
 						<li><NavLink to="/properties"><i className="bx bx-right-arrow-alt"/>Properties</NavLink></li>
 					</ul>
-				</li>
+				</li>*/}
 				<li>
-					<a href={'#!'} className="has-arrow">
-						<div className="parent-icon"><i className='bx bx-user'/>
-						</div>
+					<a href={'/users'} className="has-arrow">
+						<div className="parent-icon"><i className='bx bx-user'/></div>
 						<div className="menu-title">User Management</div>
 					</a>
 					<ul>

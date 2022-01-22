@@ -16,9 +16,9 @@ function CreateProperty(props) {
 		showAlert('')
 		window.axios.post('properties', form)
 			.then(response => {
-				props.onRefresh()
 				dispatch(setInfo(response.data.message))
 				props.onHide()
+				props.onRefresh()
 			})
 			.catch((error) => {
 				const e = get_axios_error(error)
@@ -81,7 +81,7 @@ function CreateProperty(props) {
 											<label htmlFor={'ownerId'}>Owner</label>
 											<UserSelect
 												value={values.ownerId}
-												owner={''}
+												name={'ownerId'}
 												onChange={setFieldValue}
 												onBlur={setFieldTouched}
 												touched={touched.ownerId}

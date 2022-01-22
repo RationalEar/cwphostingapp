@@ -83,7 +83,8 @@ function EditProperty(props){
 											<label htmlFor={'ownerId'}>Owner</label>
 											<UserSelect
 												value={values.ownerId}
-												owner={property.owner}
+												name={'ownerId'}
+												defaultUser={property.owner}
 												onChange={setFieldValue}
 												onBlur={setFieldTouched}
 												touched={touched.ownerId}

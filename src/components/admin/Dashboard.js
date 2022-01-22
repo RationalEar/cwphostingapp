@@ -5,7 +5,7 @@ function Dashboard(props) {
 	return (
 		<div>
 			<Breadcrumbs />
-			<h1>Hello World!</h1>
+			<h1>Coming soon...</h1>
 		</div>
 	);
 }
