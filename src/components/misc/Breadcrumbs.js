@@ -15,9 +15,10 @@ function Breadcrumbs(props) {
 					</ol>
 				</nav>
 			</div>
-			{/*<div className="ms-auto">
+			<div className="ms-auto">
 				<div className="btn-group">
-					<button type="button" className="btn btn-primary">Settings</button>
+					{props.children}
+					{/*<button type="button" className="btn btn-primary">Settings</button>
 					<button type="button"
 							className="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split"
 							data-bs-toggle="dropdown"><span className="visually-hidden">Toggle Dropdown</span>
@@ -28,9 +29,9 @@ function Breadcrumbs(props) {
 						<a className="dropdown-item" href="#!">Something else here</a>
 						<div className="dropdown-divider"/>
 						<a className="dropdown-item" href="#!">Separated link</a>
-					</div>
+					</div>*/}
 				</div>
-			</div>*/}
+			</div>
 		</div>
 	);
 }

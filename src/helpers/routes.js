@@ -7,6 +7,7 @@ const Profile = React.lazy(() => import('../components/admin/users/Profile'))
 const Properties = React.lazy(() => import('../components/admin/properties/Properties'))
 const Lease = React.lazy(() => import('../components/admin/properties/leases/Lease'))
 const ViewLease = React.lazy(() => import('../components/admin/properties/leases/ViewLease'))
+const RentInvoice = React.lazy(() => import('../components/admin/properties/leases/RentInvoice'))
 
 const routes = [
 	{path: '/', name: 'Dashboard', exact:true, component: Dashboard},
@@ -17,6 +18,7 @@ const routes = [
 	{path: '/properties', name: 'Properties', exact:false, component: Properties},
 	{path: '/leases', name: 'Leases', exact:true, component: Lease},
 	{path: '/leases/:id', name: 'View Lease', exact:true, component: ViewLease},
+	{path: '/rent-invoice/:id', name: 'View Rent Invoice', exact:true, component: RentInvoice},
 	
 ]
 

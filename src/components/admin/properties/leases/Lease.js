@@ -12,6 +12,7 @@ import {NavLink, useHistory} from "react-router-dom";
 import CreateLease from "./CreateLease";
 import EditLease from "./EditLease";
 import ViewLease from "./ViewLease";
+import {PaymentSchedule, ShortDateString} from "./leaseFields";
 
 function Lease() {
 	const history = useHistory()
@@ -33,6 +34,7 @@ function Lease() {
 	const [show, setShow] = useState(false)
 	const [modal, setModal] = useState('')
 	const handleClose = () => {
+		setModal('')
 		setShow(false)
 	}
 	const handleShow = () => setShow(true)
@@ -184,15 +186,8 @@ function Lease() {
 		else return null
 	}
 	
-	const CreateLeaseModal = function (){
+	const CreateLeaseModal = () => {
 		return modal==='new' ? <CreateLease onHide={handleClose} show={show} leaseOptions={leaseOptions} onRefresh={()=>reloadPage()} /> : null
-	}
-	
-	const DateString = (props) => {
-		let date = new Date(props.date)
-		return (
-			date.toLocaleString()
-		)
 	}
 	
 	const LeaseRow = (props) => {
@@ -224,11 +219,12 @@ function Lease() {
 						<p className="mb-0">{lease.property.address.city}{(lease.property.address.city && lease.property.address.country) && ',' } {lease.property.address.country}</p> : null}
 				</td>
 				<td>{lease.status}</td>
+				<td><PaymentSchedule lease={lease} /></td>
 				<td>
-					<DateString date={lease.startDate} />
+					<ShortDateString date={lease.startDate} />
 				</td>
 				<td>
-					<DateString date={lease.endDate} />
+					<ShortDateString date={lease.endDate} />
 				</td>
 				<td>
 					<NavLink to={'/leases/'+lease.id} className="btn btn-primary btn-sm radius-30 px-4">View Details</NavLink>
@@ -274,6 +270,7 @@ function Lease() {
 		{ field: 'name', title: 'Property Name', sort: true},
 		{ field: 'address', title: 'Address', sort: true},
 		{ field: 'status', title: 'Status', sort: false},
+		{ field: 'schedule', title: 'Payment Schedule', sort: false},
 		{ field: 'startDate', title: 'Start Date', sort: true },
 		{ field: 'endDate', title: 'End Date', sort: true },
 		{ field: 'details', title: 'View Details', sort: false},
@@ -324,7 +321,11 @@ function Lease() {
 	
 	return (
 		<React.Fragment>
-			<Breadcrumbs category={'Lease Management'} title={'Leases'} />
+			<Breadcrumbs category={'Lease Management'} title={'Leases'}>
+				<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createLease}>
+					<i className="bx bxs-plus-square"/>Add New Lease
+				</button>
+			</Breadcrumbs>
 			<div className="card">
 				<div className="card-body">
 					<div className="d-lg-flex align-items-center mb-4 gap-3">
@@ -344,11 +345,6 @@ function Lease() {
 						<Button type={'button'} variant={'light'} title="Reload" onClick={reloadPage}>
 							{loading ? <Spinner as="span" animation={"border"} size={"sm"} aria-hidden="true"/>:<span className='bx bx-revision' style={{fontWeight:'bold'}}/>}
 						</Button>
-						<div className="ms-auto">
-							<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createLease}>
-								<i className="bx bxs-plus-square"/>Add New Lease
-							</button>
-						</div>
 					</div>
 					<div className="table-responsive">
 						<table className="table mb-0">

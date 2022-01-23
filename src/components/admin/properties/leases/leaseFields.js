@@ -1,5 +1,6 @@
 import * as yup from "yup"
 import {range} from "lodash";
+import React from "react";
 
 export const schema = yup.object().shape({
 	tenantId: yup.string().required(),
@@ -45,3 +46,36 @@ export const paymentsDue = [
 	{days:60, label: 'Within 60 days'},
 	{days:90, label: 'Within 90 days'},
 ]
+
+export const PaymentSchedule = (props) => {
+	const l = props.lease
+	const ps = props.lease.paymentSchedule
+	let str = '';
+	if( ps.repeatEvery>1 ) str = 'Every '+ps.repeatEvery+' '+ps.cycle+'S '
+	else str = ps.cycle+'LY '
+	str = str.toLowerCase()
+	
+	if(['WEEK','FORTNIGHT'].includes(ps.cycle)) str += 'on ' + daysOfWeek[ps.dayOfWeek] + 's'
+	else if(['MONTH','QUARTER','SEMESTER'].includes(ps.cycle)) str += 'on the ' + days[ps.dayOfMonth]
+	else if(['YEAR','DECADE'].includes(ps.cycle)) str += 'on the '+days[ps.dayOfMonth]+' of '+monthsOfYear[ps.monthOfYear]
+	
+	const due = "Due in " + l.dueIn + ' days'
+	
+	return (
+		<span>
+			{l.currency+' '+Number(l.amount).toFixed(2)}<br />
+			<span style={{textTransform:'capitalize'}}>{str}<br/>{due}</span>
+		</span>
+	)
+}
+
+export const ShortDateString = (props) => {
+	let date = new Date(props.date)
+	let m = date.getMonth() + 1;
+	if(m<10) m = '0'+m
+	let d = date.getDate()
+	if(d<10) d = '0'+d
+	return (
+		d + '/' + m + '/' + date.getFullYear()
+	)
+}

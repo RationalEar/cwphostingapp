@@ -17,8 +17,8 @@ function EditLease(props){
 		const data = Object.assign(lease, form);
 		window.axios.put('lease/' + lease.id, data)
 			.then(response => {
-				if (response.data.data) props.updateProperty(response.data.data)
 				props.onHide()
+				if (response.data.data) props.updateLease(response.data.data)
 				dispatch(setInfo(response.data.message))
 			})
 			.catch((error) => {
@@ -44,8 +44,12 @@ function EditLease(props){
 	},[dispatch])
 	
 	useEffect(()=>{
-		if(options.length===0 && !optionsFetched){
+		let isSubscribed = true;
+		if(isSubscribed && options.length===0 && !optionsFetched){
 			getLeaseOptions()
+		}
+		return function cleanup() {
+			isSubscribed = false
 		}
 	},[getLeaseOptions, options.length, optionsFetched])
 	

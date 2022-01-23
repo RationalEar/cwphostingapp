@@ -2,11 +2,10 @@ import React from "react";
 import {Dropdown} from "react-bootstrap";
 
 function PageLimit(props){
-	
 	return(
 		<Dropdown>
 			<span>Items per page </span>
-			<Dropdown.Toggle variant="light" className="text-dark">{props.pageLimit}</Dropdown.Toggle>
+			<Dropdown.Toggle variant="light" size={props.size?props.size:null} className="text-dark">{props.pageLimit}</Dropdown.Toggle>
 			<Dropdown.Menu>
 				<Dropdown.Item onClick={() => props.setPageLimit(5)}>5</Dropdown.Item>
 				<Dropdown.Item onClick={() => props.setPageLimit(10)}>10</Dropdown.Item>

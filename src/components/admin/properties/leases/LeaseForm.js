@@ -157,7 +157,7 @@ function LeaseForm(props){
 								</BSForm.Select>
 							</BSForm.Group>
 							
-							<BSForm.Group className={values.paymentSchedule.cycle==='WEEK'?"col-6 mb-3":'d-none'}>
+							<BSForm.Group className={['WEEK', 'FORTNIGHT'].includes(values.paymentSchedule.cycle)?"col-6 mb-3":'d-none'}>
 								<label htmlFor="paymentSchedule.dayOfWeek">On</label>
 								<BSForm.Select  id="paymentSchedule.dayOfWeek" name="paymentSchedule.dayOfWeek" type="select"
 												value={values.paymentSchedule.dayOfWeek} onChange={handleChange}>

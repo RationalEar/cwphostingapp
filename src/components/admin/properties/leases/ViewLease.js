@@ -1,16 +1,25 @@
-import {Button, Card, Row} from "react-bootstrap";
+import {Button, Card, Row, Table} from "react-bootstrap";
 import React, {useCallback, useEffect, useState} from "react";
-import {useHistory, useParams} from "react-router-dom";
+import {NavLink, useHistory, useParams} from "react-router-dom";
 import Breadcrumbs from "../../../misc/Breadcrumbs";
 import {get_axios_error} from "../../../../helpers/general";
 import {setWarning} from "../../../../features/notifications/NotificationSlice";
 import {useDispatch} from "react-redux";
 import EditLease from "./EditLease";
+import {PaymentSchedule, ShortDateString} from "./leaseFields";
+import Pagination from "../../../common/Pagination";
+import PageLimit from "../../../common/PageLimit";
 
 function ViewLease(){
 	const { id } = useParams();
 	const [lease, setLease] = useState()
+	const [invoices, setInvoices] = useState([])
 	const [fetched, setFetched] = useState(false)
+	const [invoicesFetched, setInvoicesFetched] = useState(false)
+	const [pageCount, setPageCount] = useState(0)
+	const [pageLimit, setPageLimit] = useState( 10 )
+	const [pageOffset, setPageOffset] = useState( 0)
+	const [totalItems, setTotalItems] = useState(0)
 	const dispatch = useDispatch()
 	const history = useHistory();
 	
@@ -18,6 +27,7 @@ function ViewLease(){
 	const [modal, setModal] = useState('')
 	
 	const handleClose = () => {
+		setModal('')
 		setShow(false)
 	}
 	const handleShow = () => setShow(true)
@@ -44,11 +54,41 @@ function ViewLease(){
 			})
 	},[dispatch, id])
 	
+	const getLeaseInvoices = useCallback(()=>{
+		const params = { page: pageOffset, limit: pageLimit}
+		window.axios.get('/lease/'+id+'/invoices', {params: params})
+			.then(response=>{
+				setInvoices(response.data.items)
+				setInvoicesFetched(true)
+				setPageCount(response.data.totalPages)
+				const currentPage = response.data.currentPage <= response.data.totalPages ? response.data.currentPage : 0
+				setPageOffset(currentPage)
+				setTotalItems(response.data.totalItems)
+			})
+			.catch(error=>{
+				const msg = get_axios_error(error)
+				dispatch(setWarning( msg.message ))
+			})
+	},[dispatch, id, pageLimit, pageOffset])
+	
+	const handlePageClick = (event) => {
+		setPageOffset(event.selected)
+		setInvoicesFetched(false)
+	}
+	
+	const updatePageLimit = (l) => {
+		setPageLimit(l)
+		setInvoicesFetched(false)
+	}
+	
 	useEffect(()=>{
 		if(!fetched && id){
 			getLease()
 		}
-	},[fetched, getLease, id])
+		if(!invoicesFetched && id){
+			getLeaseInvoices()
+		}
+	},[fetched, getLease, getLeaseInvoices, id, invoicesFetched])
 	
 	const EditModal = function (){
 		if(lease){
@@ -64,17 +104,62 @@ function ViewLease(){
 		else return null
 	}
 	
+	const StatusPill = (props) => {
+		const inv = props.invoice
+		const today = new Date()
+		const fullyPaidDate = inv.fullyPaidDate ? new Date(inv.fullyPaidDate) : false
+		const dueDate = new Date(inv.invoiceDueDate)
+		if( inv.amountPaid === 0 && inv.amountDue>0 && today<=dueDate ) {
+			return (
+				<span className="badge rounded-pill text-dark bg-warning p-2 text-uppercase">
+					<i className='bx bxs-circle me-1'/> Due
+				</span>
+			)
+		}
+		else if( inv.amountPaid>0 && inv.invoiceAmount > inv.amountPaid && today<=dueDate ){
+			return (
+				<span className="btn badge rounded-pill text-warning bg-light-warning p-2 text-uppercase">
+					<i className='bx bxs-circle me-1'/> Partially Paid
+				</span>
+			)
+		}
+		else if( inv.invoiceAmount > inv.amountPaid && today>dueDate ){
+			return (
+				<span className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
+					<i className='bx bxs-circle me-1'/> Overdue
+				</span>
+			)
+		}
+		else if( inv.invoiceAmount <= inv.amountPaid && fullyPaidDate && fullyPaidDate<=dueDate ){
+			return (
+				<span className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase">
+					<i className='bx bxs-circle me-1'/> Paid
+				</span>
+			)
+		}
+		
+		else return (
+			<span className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
+				<i className='bx bxs-circle me-1'/>
+				Disabled
+			</span>
+		)
+	}
+	
 	if(fetched && lease) {
 		const property = lease.property
+		console.log(property)
 		const tenant = lease.tenant
 		return (
 			<React.Fragment>
-				<Breadcrumbs category={'Lease Management'} title={'View Lease'} />
+				<Breadcrumbs category={'Lease Management'} title={'View Lease'}>
+					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
+				</Breadcrumbs>
 				<Row>
-					<div className={'col-sm-7'}>
+					<div className={'col-sm-6'}>
 						<Card>
 							<Card.Header>
-								<Card.Title>
+								<Card.Title className="mb-0 mt-1">
 									{property.address ? property.address.addressLine1 : ''}{property.address && property.address.addressLine2 ? ', ' : ''}
 									{property.address ? property.address.addressLine2 : ''}
 									&nbsp;
@@ -133,12 +218,10 @@ function ViewLease(){
 											<span className="text-secondary">{lease.status}</span>
 										</li>
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-											<h6 className="mb-0">Rent Amount</h6>
-											<span className="text-secondary">{lease.currency} {lease.amount}</span>
-										</li>
-										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-											<h6 className="mb-0">Payment Every</h6>
-											<span className="text-secondary">{lease.paymentSchedule.cycle}</span>
+											<h6 className="mb-0">Payment Schedule</h6>
+											<span className="text-secondary text-end">
+												<PaymentSchedule lease={lease} />
+											</span>
 										</li>
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 											&nbsp;
@@ -146,18 +229,69 @@ function ViewLease(){
 									</ul>
 								</div>
 							</Card.Body>
-							<Card.Footer style={{borderTop: 'none'}} className={'align-content-end'}>
-								<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
-							</Card.Footer>
 						</Card>
 					</div>
-					<div className={'col-sm-5'}>
+					<div className={'col-sm-6'}>
 						<Card>
 							<Card.Header>
-								<Card.Title>Payments</Card.Title>
+								<Row>
+									<div className={'col-5'}>
+										<Card.Title className="mb-0 mt-1">Billing History</Card.Title>
+									</div>
+									<div className={'col-7 align-content-end text-end'}>
+										<PageLimit setPageLimit={updatePageLimit} pageLimit={pageLimit} size={'sm'}/>
+									</div>
+								</Row>
 							</Card.Header>
 							<Card.Body>
-								Coming soon
+								<div className="table-responsive">
+									<Table className={'mb-0'}>
+										<thead>
+											<tr>
+												<th>Billing Date</th>
+												<th>Due Date</th>
+												<th>Amount Due</th>
+												<th>Amount Paid</th>
+												<th>Status</th>
+												{/*<th>Actions</th>*/}
+											</tr>
+										</thead>
+										<tbody>
+											{invoices.map( invoice =>{
+												return(
+													<tr key={invoice.id}>
+														<td>
+															<NavLink to={'/rent-invoice/'+invoice.id}>
+																<ShortDateString date={invoice.invoiceDate}/>
+															</NavLink>
+														</td>
+														<td><ShortDateString date={invoice.invoiceDueDate}/></td>
+														<td>{invoice.currency} {Number(invoice.amountDue).toFixed(2)}</td>
+														<td>{invoice.currency} {Number(invoice.amountPaid).toFixed(2)}</td>
+														<td>
+															<NavLink to={'/rent-invoice/'+invoice.id}>
+																<StatusPill invoice={invoice} />
+															</NavLink>
+														</td>
+														{/*<td>
+															<div className={'d-flex order-actions'}>
+																{invoice.amountPaid<invoice.invoiceAmount ?
+																	<Button variant={"primary"} size={"sm"} className={'m-0 pb-0'} title={'Add payment'}>
+																		<span className="bx bx-plus-medical"/></Button>
+																	: <Button variant={"danger"} size={"sm"} className={'m-0 pb-0'} title={'Delete payment'}><span className="bx bx-trash"/></Button>}
+															</div>
+														</td>*/}
+													</tr>
+												)
+											} )}
+										</tbody>
+									</Table>
+								</div>
+								{pageCount>0?<Pagination
+									handlePageClick={handlePageClick}
+									pageCount={pageCount} pageLimit={pageLimit} pageOffset={pageOffset}
+									totalItems={totalItems} currentItems={invoices.length}
+								/>:null}
 							</Card.Body>
 						</Card>
 					</div>
