@@ -71,3 +71,7 @@ export const convertSort = (data) => {
 	}
 	return { field: 'created', dir: 'desc' }
 }
+
+export const leftPad = (num, length) => {
+	return num.toString().padStart(length, 0);
+}

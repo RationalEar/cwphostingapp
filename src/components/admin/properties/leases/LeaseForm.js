@@ -161,12 +161,16 @@ function LeaseForm(props){
 								<label htmlFor="paymentSchedule.dayOfWeek">On</label>
 								<BSForm.Select  id="paymentSchedule.dayOfWeek" name="paymentSchedule.dayOfWeek" type="select"
 												value={values.paymentSchedule.dayOfWeek} onChange={handleChange}>
-									<option>Select day</option>
 									{daysOfWeek.map( (option, index) => {
 										return <option key={option} value={index}>{option}</option>
 									} )}
 								</BSForm.Select>
 							</BSForm.Group>
+							
+							{/*<BSForm.Group className={ 'HOUR' === values.paymentSchedule.cycle ?"col-6 mb-3":'d-none'}>
+								<label htmlFor="paymentSchedule.hour">At</label>
+								<BSForm.Control type={'time'} name="paymentSchedule.hour" step={3600} value={values.paymentSchedule.hour} onChange={handleChange} />
+							</BSForm.Group>*/}
 							
 							<BSForm.Group className="col-6 mb-3">
 								<label htmlFor="dueIn">Payments Due</label>

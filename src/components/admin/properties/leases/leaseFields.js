@@ -1,6 +1,7 @@
 import * as yup from "yup"
 import {range} from "lodash";
 import React from "react";
+import {leftPad} from "../../../../helpers/general";
 
 export const schema = yup.object().shape({
 	tenantId: yup.string().required(),
@@ -26,11 +27,21 @@ export const schema = yup.object().shape({
 	})
 })
 
+export const paymentSchema = yup.object().shape({
+	paymentDate: yup.date().required(),
+	amount: yup.number().required(),
+	currency: yup.string().required(),
+	confirmed: yup.boolean().required(),
+	comment: yup.string(),
+	paymentMethod: yup.string(),
+	exchangeRate: yup.number()
+})
+
 const fourToTwenty = range(4, 21).map( n => n+'th' )
 const twentyFourToThirty = range(24, 31).map( n => n+'th')
 
 export const days = ['Last day', 'First day', '2nd', '3rd', ...fourToTwenty, '21st', '22nd', '23rd', ...twentyFourToThirty, '31st']
-export const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+export const daysOfWeek = ['-- select day --', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 export const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 export const paymentsDue = [
 	{days:0, label: 'On receipt'},
@@ -52,14 +63,15 @@ export const PaymentSchedule = (props) => {
 	const ps = props.lease.paymentSchedule
 	let str = '';
 	if( ps.repeatEvery>1 ) str = 'Every '+ps.repeatEvery+' '+ps.cycle+'S '
+	else if (ps.cycle === 'DAY') str = 'Daily'
 	else str = ps.cycle+'LY '
 	str = str.toLowerCase()
 	
 	if(['WEEK','FORTNIGHT'].includes(ps.cycle)) str += 'on ' + daysOfWeek[ps.dayOfWeek] + 's'
 	else if(['MONTH','QUARTER','SEMESTER'].includes(ps.cycle)) str += 'on the ' + days[ps.dayOfMonth]
 	else if(['YEAR','DECADE'].includes(ps.cycle)) str += 'on the '+days[ps.dayOfMonth]+' of '+monthsOfYear[ps.monthOfYear]
-	
-	const due = "Due in " + l.dueIn + ' days'
+	const s = l.dueIn===1 ? ' day' : ' days'
+	const due = "Due in " + l.dueIn + s
 	
 	return (
 		<span>
@@ -71,11 +83,13 @@ export const PaymentSchedule = (props) => {
 
 export const ShortDateString = (props) => {
 	let date = new Date(props.date)
-	let m = date.getMonth() + 1;
-	if(m<10) m = '0'+m
-	let d = date.getDate()
-	if(d<10) d = '0'+d
 	return (
-		d + '/' + m + '/' + date.getFullYear()
+		leftPad(date.getDate(),2) + '/' + leftPad(date.getMonth() + 1,2) + '/' + date.getFullYear()
 	)
+}
+
+export const ShortDateTime = (props) => {
+	let date = new Date(props.date)
+	const d = leftPad(date.getDate(),2) + '/' + leftPad(date.getMonth() + 1,2) + '/' + date.getFullYear()
+	return d + ', '+ leftPad(date.getHours(),2) + ':'+leftPad(date.getMinutes(),2)
 }

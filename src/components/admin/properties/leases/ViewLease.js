@@ -2,11 +2,11 @@ import {Button, Card, Row, Table} from "react-bootstrap";
 import React, {useCallback, useEffect, useState} from "react";
 import {NavLink, useHistory, useParams} from "react-router-dom";
 import Breadcrumbs from "../../../misc/Breadcrumbs";
-import {get_axios_error} from "../../../../helpers/general";
+import {get_axios_error, leftPad} from "../../../../helpers/general";
 import {setWarning} from "../../../../features/notifications/NotificationSlice";
 import {useDispatch} from "react-redux";
 import EditLease from "./EditLease";
-import {PaymentSchedule, ShortDateString} from "./leaseFields";
+import {PaymentSchedule, ShortDateString, ShortDateTime} from "./leaseFields";
 import Pagination from "../../../common/Pagination";
 import PageLimit from "../../../common/PageLimit";
 
@@ -137,18 +137,16 @@ function ViewLease(){
 				</span>
 			)
 		}
-		
 		else return (
-			<span className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase">
+			<span className="btn badge rounded-pill text-danger bg-light-danger p-2 text-uppercase" title={'Try adding a payment of 0.00 to fix data error'}>
 				<i className='bx bxs-circle me-1'/>
-				Disabled
+				Data Error
 			</span>
 		)
 	}
 	
 	if(fetched && lease) {
 		const property = lease.property
-		console.log(property)
 		const tenant = lease.tenant
 		return (
 			<React.Fragment>
@@ -211,7 +209,7 @@ function ViewLease(){
 										</li>
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 											<h6 className="mb-0">Created</h6>
-											<span className="text-secondary">{lease.created}</span>
+											<span className="text-secondary"><ShortDateTime date={lease.created}/></span>
 										</li>
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 											<h6 className="mb-0">Lease Status</h6>
@@ -263,6 +261,7 @@ function ViewLease(){
 														<td>
 															<NavLink to={'/rent-invoice/'+invoice.id}>
 																<ShortDateString date={invoice.invoiceDate}/>
+																{lease.paymentSchedule.cycle==='HOUR' && ' ['+leftPad(invoice.invoiceHour,2)+']'}
 															</NavLink>
 														</td>
 														<td><ShortDateString date={invoice.invoiceDueDate}/></td>
@@ -297,12 +296,17 @@ function ViewLease(){
 					</div>
 				</Row>
 				<EditModal />
+				<div className={'align-content-end text-end mt-5'}>
+					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
+				</div>
 			</React.Fragment>
 		)
 	}
 	else return (
 		<React.Fragment>
-			<Breadcrumbs category={'Lease Management'} title={'View Lease'} />
+			<Breadcrumbs category={'Lease Management'} title={'View Lease'}>
+				<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
+			</Breadcrumbs>
 			<div className={'card'}>
 				<div className={'card-body'}>
 					<h4>loading, please wait...</h4>
