@@ -1,8 +1,9 @@
 import React from "react";
-import {ProgressBar, Toast, ToastContainer} from "react-bootstrap"
+import {ToastContainer} from "react-bootstrap"
 import { useSelector, useDispatch } from 'react-redux'
 import {removeToast} from '../../features/notifications/NotificationSlice'
 import "./Notifications.css"
+import PausableToast from "./PausableToast";
 
 function Notifications(){
 	
@@ -15,17 +16,13 @@ function Notifications(){
 	
 	return(
 		<ToastContainer position={'top-end'} className="mt-2 me-4">
-			
 			{messages.map( message => {
 				return(
-					<Toast bg={message.flag} key={message.id} onClose={()=>removeMessage(message.id)} onAnimationEnd={()=>removeMessage(message.id)}>
-						<ProgressBar />
-						<Toast.Header>
-							<strong className="me-auto">{message.flag === 'danger' ? 'Error' : message.flag} Message</strong>
-							<small className="text-muted">just now</small>
-						</Toast.Header>
-						<Toast.Body className="text-dark">{message.message}</Toast.Body>
-					</Toast>
+					<PausableToast
+						key={message.id}
+						message={message}
+						removeMessage={removeMessage}
+					/>
 				)
 			})}
 		</ToastContainer>

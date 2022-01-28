@@ -9,6 +9,7 @@ import EditLease from "./EditLease";
 import {PaymentSchedule, ShortDateString, ShortDateTime} from "./leaseFields";
 import Pagination from "../../../common/Pagination";
 import PageLimit from "../../../common/PageLimit";
+import CreatePayment from "./CreatePayment";
 
 function ViewLease(){
 	const { id } = useParams();
@@ -20,8 +21,11 @@ function ViewLease(){
 	const [pageLimit, setPageLimit] = useState( 10 )
 	const [pageOffset, setPageOffset] = useState( 0)
 	const [totalItems, setTotalItems] = useState(0)
+	const [options, setOptions] = useState([])
+	const [optionsFetched, setOptionsFetched] = useState(false)
 	const dispatch = useDispatch()
 	const history = useHistory();
+	const [currentInvoice, setCurrentInvoice] = useState()
 	
 	const [show, setShow] = useState(false)
 	const [modal, setModal] = useState('')
@@ -40,6 +44,13 @@ function ViewLease(){
 	
 	const onUpdateLease = u => {
 		setLease(u)
+	}
+	
+	const recordPayment = (invoice) => {
+		setCurrentInvoice(invoice)
+		setModal('record')
+		setShow(true)
+		return false
 	}
 	
 	const getLease = useCallback(()=>{
@@ -71,6 +82,19 @@ function ViewLease(){
 			})
 	},[dispatch, id, pageLimit, pageOffset])
 	
+	const getLeaseOptions = useCallback(()=>{
+		setOptionsFetched(true)
+		window.axios.get("lease/config")
+			.then(response=>{
+				setOptions(response.data)
+			})
+			.catch(error=>{
+				const msg = get_axios_error(error)
+				dispatch(setWarning( msg.message ))
+			})
+		
+	},[dispatch])
+	
 	const handlePageClick = (event) => {
 		setPageOffset(event.selected)
 		setInvoicesFetched(false)
@@ -88,7 +112,10 @@ function ViewLease(){
 		if(!invoicesFetched && id){
 			getLeaseInvoices()
 		}
-	},[fetched, getLease, getLeaseInvoices, id, invoicesFetched])
+		if(!optionsFetched){
+			getLeaseOptions()
+		}
+	},[fetched, getLease, getLeaseInvoices, getLeaseOptions, id, invoicesFetched, options.length, optionsFetched])
 	
 	const EditModal = function (){
 		if(lease){
@@ -99,6 +126,17 @@ function ViewLease(){
 			}
 			return (
 				modal==='edit' ? <EditLease lease={lease} onHide={handleClose} show={show} updateLease={onUpdateLease} leaseOptions={false} /> : null
+			)
+		}
+		else return null
+	}
+	
+	const PaymentModal = function (){
+		if(currentInvoice && lease){
+			return (
+				modal==='record' ? <CreatePayment invoice={currentInvoice} lease={lease} onHide={handleClose}
+												  show={show} onRefresh={()=>setInvoicesFetched(false)}
+												  currencies={options.currencies} paymentMethods={options.paymentMethods} /> : null
 			)
 		}
 		else return null
@@ -150,7 +188,7 @@ function ViewLease(){
 		const tenant = lease.tenant
 		return (
 			<React.Fragment>
-				<Breadcrumbs category={'Lease Management'} title={'View Lease'}>
+				<Breadcrumbs category={'Lease Management'} title={'View Lease'} links={[{to:'/leases', title:'Leases'}]}>
 					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 				</Breadcrumbs>
 				<Row>
@@ -256,16 +294,22 @@ function ViewLease(){
 										</thead>
 										<tbody>
 											{invoices.map( invoice =>{
+												const d = new Date(invoice.invoiceDate)
 												return(
 													<tr key={invoice.id}>
 														<td>
 															<NavLink to={'/rent-invoice/'+invoice.id}>
 																<ShortDateString date={invoice.invoiceDate}/>
-																{lease.paymentSchedule.cycle==='HOUR' && ' ['+leftPad(invoice.invoiceHour,2)+']'}
+																{lease.paymentSchedule.cycle==='HOUR' && ' ['+leftPad(d.getHours(),2)+']'}
 															</NavLink>
 														</td>
 														<td><ShortDateString date={invoice.invoiceDueDate}/></td>
-														<td>{invoice.currency} {Number(invoice.amountDue).toFixed(2)}</td>
+														<td>
+															<Button variant={"link"} size={"sm"} className="text-decoration-none m-0 p-0"
+																	onClick={()=>recordPayment(invoice)} title="Click to record payment">
+																{invoice.currency} {Number(invoice.amountDue).toFixed(2)}
+															</Button>
+														</td>
 														<td>{invoice.currency} {Number(invoice.amountPaid).toFixed(2)}</td>
 														<td>
 															<NavLink to={'/rent-invoice/'+invoice.id}>
@@ -296,6 +340,7 @@ function ViewLease(){
 					</div>
 				</Row>
 				<EditModal />
+				<PaymentModal />
 				<div className={'align-content-end text-end mt-5'}>
 					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 				</div>

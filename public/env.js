@@ -18,7 +18,7 @@ window.env = {
   "npm_config_userconfig": "/home/michael/.npmrc",
   "npm_config_local_prefix": "/home/michael/apps/ptracker",
   "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
-  "GIO_LAUNCHED_DESKTOP_FILE_PID": "12553",
+  "GIO_LAUNCHED_DESKTOP_FILE_PID": "706604",
   "COLOR": "1",
   "npm_config_metrics_registry": "https://registry.npmjs.org/",
   "MANDATORY_PATH": "/usr/share/gconf/ubuntu.mandatory.path",

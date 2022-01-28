@@ -1,22 +1,29 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 
 function Breadcrumbs(props) {
+	const links = props.links ? props.links : []
 	return (
-		<div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-			<div className="breadcrumb-title pe-3">{props.category?props.category:'Dashboard'}</div>
-			<div className="ps-3">
+		<div className="page-breadcrumb d-flex d-sm-flex align-items-center mb-3">
+			<div className="breadcrumb-title pe-3 d-none d-sm-flex">{props.category?props.category:'Dashboard'}</div>
+			<div className="ps-3 d-none d-sm-flex">
 				<nav aria-label="breadcrumb">
 					<ol className="breadcrumb mb-0 p-0">
 						<li className="breadcrumb-item">
-							<Link to="/"><i className="bx bx-home-alt"/></Link>
+							<NavLink to="/"><i className="bx bx-home-alt"/></NavLink>
 						</li>
+						{links.map(link => {
+							return(
+								<li key={link.to} className="breadcrumb-item">
+									<NavLink to={link.to}>{link.title}</NavLink>
+								</li>
+							)
+						})}
 						<li className="breadcrumb-item active" aria-current="page">{props.title?props.title:'Dashboard'}</li>
 					</ol>
 				</nav>
 			</div>
 			<div className="ms-auto">
-				<div className="btn-group">
 					{props.children}
 					{/*<button type="button" className="btn btn-primary">Settings</button>
 					<button type="button"
@@ -30,7 +37,6 @@ function Breadcrumbs(props) {
 						<div className="dropdown-divider"/>
 						<a className="dropdown-item" href="#!">Separated link</a>
 					</div>*/}
-				</div>
 			</div>
 		</div>
 	);

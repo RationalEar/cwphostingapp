@@ -97,6 +97,10 @@ function RentInvoice(){
 	}
 	
 	if(fetched && invoice){
+		const links = [
+			{ to: '/leases', title:'Leases' },
+			{ to: '/leases/'+invoice.leaseId, title: 'View Lease' }
+		]
 		const owner = lease && lease.property && lease.property.owner ? lease.property.owner : null
 		const address = lease && lease.property && lease.property.address ? lease.property.address : null
 		const tenant = lease && lease.tenant ? lease.tenant : null
@@ -106,8 +110,10 @@ function RentInvoice(){
 		let i = 0;
 		return (
 			<React.Fragment>
-				<Breadcrumbs category={'Lease Management'} title={'View Rent Invoice'}>
-					<Button type={'button'} variant={'outline-secondary'} className={'me-2'} onClick={()=>setFetched(false)}>Refresh Payments</Button>
+				<Breadcrumbs category={'Lease Management'} title={'View Rent Invoice'} links={links} >
+					<Button type={'button'} variant={'outline-secondary'} className={'me-2'} onClick={()=>setFetched(false)} title="Refresh Payments">
+						<span className="bx bx-revision fw-bold" />
+					</Button>
 					<Button type={'button'} variant={'primary'} className={'me-2'} onClick={recordPayment}>Record Payment</Button>
 					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 				</Breadcrumbs>
@@ -237,7 +243,7 @@ function RentInvoice(){
 	}
 	else return (
 		<React.Fragment>
-			<Breadcrumbs category={'Lease Management'} title={'View Rent Invoice'}>
+			<Breadcrumbs category={'Lease Management'} title={'View Rent Invoice'} links={[{ to: '/leases', title:'Leases' }]}>
 				<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 			</Breadcrumbs>
 			<div className={'card'}>
