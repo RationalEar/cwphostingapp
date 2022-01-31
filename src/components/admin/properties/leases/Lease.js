@@ -218,7 +218,10 @@ function Lease() {
 					{lease.property.address.city || lease.property.address.country ?
 						<p className="mb-0">{lease.property.address.city}{(lease.property.address.city && lease.property.address.country) && ',' } {lease.property.address.country}</p> : null}
 				</td>
-				<td>{lease.status}</td>
+				<td>
+					{lease.status}<br/>
+					{lease.paymentSchedule.cycle==='DAY'?'DAI':lease.paymentSchedule.cycle}LY
+				</td>
 				<td><PaymentSchedule lease={lease} /></td>
 				<td>
 					<ShortDateString date={lease.startDate} />

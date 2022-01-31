@@ -53,7 +53,7 @@ function RentInvoice(){
 	const deletePayment = (payment) => {
 		const confirm = window.confirm("Are you sure you want to DELETE the payment of "+payment.currency+' '+Number(payment.amount).toFixed(2))
 		if (confirm){
-			window.axios.delete('/rent-invoice/'+payment.id, payment)
+			window.axios.delete('/rent-invoice/payment/'+payment.id, payment)
 				.then(response => {
 					dispatch(setInfo(response.data.message))
 					setFetched(false)
@@ -163,6 +163,7 @@ function RentInvoice(){
 										<Table className={'table-borderless'}>
 											<thead>
 											<tr className={'text-dark'}>
+												<th />
 												<th>#</th>
 												<th className="text-start">DATE</th>
 												<th className="text-start">POSTED BY</th>
@@ -175,6 +176,12 @@ function RentInvoice(){
 											{payments.map(payment=>{
 												return(
 													<tr key={payment.id}>
+														<td>
+															<Button variant={'danger'} size={'sm'} title="Delete payment" onClick={()=>deletePayment(payment)}
+																className="px-1 py-0">
+																<span className={'bx bxs-trash fw-bold'}/>
+															</Button>
+														</td>
 														<td className="">{++i}</td>
 														<td className=""><ShortDateString date={payment.created} /></td>
 														<td className="">{payment.postedBy.firstName} {payment.postedBy.lastName}</td>
@@ -191,9 +198,6 @@ function RentInvoice(){
 																		onClick={()=>confirmPayment(payment)}>
 																	<span className={'bx bx-like fw-bold'}/>
 																</Button>
-																<Button variant={'danger'} size={'sm'} title="Delete payment" onClick={()=>deletePayment(payment)}>
-																	<span className={'bx bxs-trash fw-bold'}/>
-																</Button>
 															</div>}
 														</td>
 													</tr>
@@ -202,17 +206,17 @@ function RentInvoice(){
 											</tbody>
 											<tfoot>
 											<tr>
-												<td colSpan="4"/>
+												<td colSpan="5"/>
 												<td colSpan="1">Invoice Total</td>
 												<td>{Number(invoice.invoiceAmount).toFixed(2)}</td>
 											</tr>
 											<tr>
-												<td colSpan="4"/>
+												<td colSpan="5"/>
 												<td colSpan="1">Amount Paid</td>
 												<td>{Number(invoice.amountPaid).toFixed(2)}</td>
 											</tr>
 											<tr>
-												<td colSpan="4"/>
+												<td colSpan="5"/>
 												<td colSpan="1">Amount Due</td>
 												<td>{Number(invoice.amountDue).toFixed(2)}</td>
 											</tr>

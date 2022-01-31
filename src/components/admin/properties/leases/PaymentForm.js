@@ -44,7 +44,7 @@ function PaymentForm(props){
 							</BSForm.Group>
 							<BSForm.Group className="col-6 mb-3" id={'paymentDate'}>
 								<label htmlFor="paymentDate">Payment date</label>
-								<BSForm.Control type={'date'} name="paymentDate" value={values.paymentDate} onChange={handleChange} />
+								<BSForm.Control type={'datetime-local'} name="paymentDate" value={values.paymentDate} onChange={handleChange} />
 								<BSForm.Control.Feedback type="invalid">{errors.paymentDate}</BSForm.Control.Feedback>
 							</BSForm.Group>
 							<BSForm.Group className={'col-6 mb-3'} id={'paymentMethod'}>
@@ -69,7 +69,7 @@ function PaymentForm(props){
 							</BSForm.Group>
 							<BSForm.Group className="col-6 mb-3">
 								<label htmlFor="confirmed">Payment Confirmed</label>
-								<BSForm.Check id="confirmed" name="confirmed" type="switch" label={values.confirmed?'Yes':'No'}
+								<BSForm.Check id="confirmed" name="confirmed" type="switch" checked={values.confirmed} label={values.confirmed?'Yes':'No'}
 												value={values.confirmed} onChange={handleChange}
 												>
 								</BSForm.Check>

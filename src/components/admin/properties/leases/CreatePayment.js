@@ -1,6 +1,6 @@
 import {Modal} from "react-bootstrap";
 import React, {useState} from "react";
-import {get_axios_error} from "../../../../helpers/general";
+import {get_axios_error, leftPad} from "../../../../helpers/general";
 import {useDispatch, useSelector} from "react-redux";
 import { setInfo} from "../../../../features/notifications/NotificationSlice";
 import './Lease.css'
@@ -40,15 +40,17 @@ function CreatePayment(props) {
 		if(m<10) m = '0'+m;
 		let d = date.getDate();
 		if(d<10) d = '0'+d
-		return date.getFullYear()+'-'+m+'-'+d
+		const h = leftPad(date.getHours(), 2)
+		const i = leftPad(date.getMinutes(), 2)
+		return date.getFullYear()+'-'+m+'-'+d+'T'+h+':'+i
 	}
 	
 	const initialValues = {
 		paymentDate: defaultDate(),
 		amount: props.invoice.amountDue,
 		currency: props.invoice.currency,
-		paymentMethod: '',
-		confirmed: false,
+		paymentMethod: 'BANK_TRANSFER',
+		confirmed: true,
 		comment: '',
 		exchangeRate: 1
 	}

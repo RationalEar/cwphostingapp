@@ -10,6 +10,8 @@ import {PaymentSchedule, ShortDateString, ShortDateTime} from "./leaseFields";
 import Pagination from "../../../common/Pagination";
 import PageLimit from "../../../common/PageLimit";
 import CreatePayment from "./CreatePayment";
+import ReportPreview from "./ReportPreview";
+import ReportPdf from "./ReportPdf";
 
 function ViewLease(){
 	const { id } = useParams();
@@ -49,6 +51,18 @@ function ViewLease(){
 	const recordPayment = (invoice) => {
 		setCurrentInvoice(invoice)
 		setModal('record')
+		setShow(true)
+		return false
+	}
+	
+	const previewReport = () => {
+		setModal('report')
+		setShow(true)
+		return false
+	}
+	
+	const pdfReport = () => {
+		setModal('reportPdf')
 		setShow(true)
 		return false
 	}
@@ -142,6 +156,24 @@ function ViewLease(){
 		else return null
 	}
 	
+	const ReportModal = function (){
+		if(lease) {
+			return (
+				modal === 'report' ? <ReportPreview onHide={handleClose} show={show} leaseId={lease.id}/> : null
+			)
+		}
+		else return null
+	}
+	
+	const PdfDocument = function (){
+		if(lease) {
+			return (
+				modal === 'reportPdf' ? <ReportPdf onHide={handleClose} show={show} leaseId={lease.id}/> : null
+			)
+		}
+		else return null
+	}
+	
 	const StatusPill = (props) => {
 		const inv = props.invoice
 		const today = new Date()
@@ -170,8 +202,15 @@ function ViewLease(){
 		}
 		else if( inv.invoiceAmount <= inv.amountPaid && fullyPaidDate && fullyPaidDate<=dueDate ){
 			return (
-				<span className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase">
+				<span className="btn badge rounded-pill text-success bg-light-success p-2 text-uppercase" title={fullyPaidDate.toLocaleString()}>
 					<i className='bx bxs-circle me-1'/> Paid
+				</span>
+			)
+		}
+		else if( inv.invoiceAmount <= inv.amountPaid && fullyPaidDate && fullyPaidDate>dueDate ){
+			return (
+				<span className="btn badge rounded-pill text-dark bg-light-danger p-2 text-uppercase" title={fullyPaidDate.toLocaleString()}>
+					<i className='bx bxs-circle me-1'/> Paid Late
 				</span>
 			)
 		}
@@ -227,6 +266,14 @@ function ViewLease(){
 											<button className="btn btn-outline-primary mb-2"><i
 												className="bx bxs-envelope"/> Message Owner / Agent
 											</button>
+											&nbsp;&nbsp;&nbsp;
+											<button className="btn btn-outline-primary mb-2" onClick={previewReport}><i
+												className="bx bx-chart"/> Preview Report
+											</button>
+											&nbsp;&nbsp;&nbsp;
+											<button className="btn btn-outline-primary mb-2" onClick={pdfReport}><i
+												className="bx bx-chart"/> PDF Report
+											</button>
 										</div>
 									</div>
 									<hr className="my-4"/>
@@ -248,6 +295,10 @@ function ViewLease(){
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 											<h6 className="mb-0">Created</h6>
 											<span className="text-secondary"><ShortDateTime date={lease.created}/></span>
+										</li>
+										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+											<h6 className="mb-0">Last Invoice Date</h6>
+											<span className="text-secondary"><ShortDateTime date={lease.lastInvoiceDate}/></span>
 										</li>
 										<li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 											<h6 className="mb-0">Lease Status</h6>
@@ -341,6 +392,8 @@ function ViewLease(){
 				</Row>
 				<EditModal />
 				<PaymentModal />
+				<ReportModal />
+				<PdfDocument />
 				<div className={'align-content-end text-end mt-5'}>
 					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 				</div>
