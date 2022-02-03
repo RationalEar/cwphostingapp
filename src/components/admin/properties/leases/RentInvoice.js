@@ -183,7 +183,7 @@ function RentInvoice(){
 															</Button>
 														</td>
 														<td className="">{++i}</td>
-														<td className=""><ShortDateString date={payment.created} /></td>
+														<td className=""><ShortDateString date={payment.paymentDate} /></td>
 														<td className="">{payment.postedBy.firstName} {payment.postedBy.lastName}</td>
 														<td className="text-start">{payment.comment}</td>
 														<td className="text-end">{payment.currency} {Number(payment.amount).toFixed(2)}</td>

@@ -137,7 +137,7 @@ function CreateAccount() {
 															   onChange={formik.handleChange} value={formik.values.email} isInvalid={!!formik.errors.email}/>
 														<Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
 													</Form.Group>
-													<Form.Group controlId="inputChoosePassword" className="col-12">
+													<Form.Group className="col-12">
 														<label>Create Password</label>
 														<InputGroup hasValidation id="show_hide_password">
 															<Form.Control type={passwordType} name="password" id={'newPassword'}

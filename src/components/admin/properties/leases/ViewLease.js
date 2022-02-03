@@ -61,12 +61,6 @@ function ViewLease(){
 		return false
 	}
 	
-	const pdfReport = () => {
-		setModal('reportPdf')
-		setShow(true)
-		return false
-	}
-	
 	const getLease = useCallback(()=>{
 		window.axios.get('/lease/'+id)
 			.then(response=>{
@@ -270,10 +264,6 @@ function ViewLease(){
 											<button className="btn btn-outline-primary mb-2" onClick={previewReport}><i
 												className="bx bx-chart"/> Preview Report
 											</button>
-											&nbsp;&nbsp;&nbsp;
-											<button className="btn btn-outline-primary mb-2" onClick={pdfReport}><i
-												className="bx bx-chart"/> PDF Report
-											</button>
 										</div>
 									</div>
 									<hr className="my-4"/>
@@ -349,7 +339,7 @@ function ViewLease(){
 												return(
 													<tr key={invoice.id}>
 														<td>
-															<NavLink to={'/rent-invoice/'+invoice.id}>
+															<NavLink to={'/admin/rent-invoice/'+invoice.id}>
 																<ShortDateString date={invoice.invoiceDate}/>
 																{lease.paymentSchedule.cycle==='HOUR' && ' ['+leftPad(d.getHours(),2)+']'}
 															</NavLink>
@@ -363,7 +353,7 @@ function ViewLease(){
 														</td>
 														<td>{invoice.currency} {Number(invoice.amountPaid).toFixed(2)}</td>
 														<td>
-															<NavLink to={'/rent-invoice/'+invoice.id}>
+															<NavLink to={'/admin/rent-invoice/'+invoice.id}>
 																<StatusPill invoice={invoice} />
 															</NavLink>
 														</td>

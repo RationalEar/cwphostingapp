@@ -65,7 +65,7 @@ function EditLease(props){
 		amount: lease.amount || '',
 		// paymentsDue: lease.paymentsDue || '',
 		dueIn: lease.dueIn || '',
-		gracePeriod: lease.gracePeriod || '',
+		gracePeriod: lease.gracePeriod || 0,
 		leaseAgreement: lease.leaseAgreement || '',
 		// comments: [''],
 		paymentSchedule: {

@@ -2,7 +2,7 @@ import {Button, Modal, Form as BSForm, Alert, Spinner} from "react-bootstrap";
 import React, {useState} from "react";
 import {Formik, Form} from "formik";
 import {get_axios_error} from "../../../helpers/general";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { setInfo} from "../../../features/notifications/NotificationSlice";
 import {schema} from "./propertyFields";
 import UserSelect from "./UserSelect";
@@ -10,6 +10,7 @@ import UserSelect from "./UserSelect";
 function CreateProperty(props) {
 	const [alert, showAlert] = useState('')
 	const dispatch = useDispatch()
+	const profile = useSelector((state) => state.profile)
 	
 	const handleSubmit = (form, FormikBag) => {
 		console.log(form)
@@ -31,6 +32,7 @@ function CreateProperty(props) {
 		name: '',
 		description: '',
 		status: '',
+		ownerId: profile.role.name==='MANAGER' ? profile.id : '',
 		address: {
 			addressLine1: '',
 			addressLine2: '',
@@ -77,7 +79,10 @@ function CreateProperty(props) {
 											<label htmlFor="name">Description</label>
 											<BSForm.Control as="textarea" name="description" value={values.description} onChange={handleChange} />
 										</BSForm.Group>
-										<BSForm.Group className={'col-12 mb-3'}>
+										{profile.role.name==='MANAGER' ? <BSForm.Group className={'col-12 mb-3'}>
+											<label htmlFor={'ownerId'}>Owner</label>
+											<div className={'form-control text-muted'}>{profile.firstName} {profile.lastName} ({profile.email})</div>
+										</BSForm.Group> : <BSForm.Group className={'col-12 mb-3'}>
 											<label htmlFor={'ownerId'}>Owner</label>
 											<UserSelect
 												value={values.ownerId}
@@ -87,7 +92,7 @@ function CreateProperty(props) {
 												touched={touched.ownerId}
 												error={errors.ownerId}
 											/>
-										</BSForm.Group>
+										</BSForm.Group>}
 									</fieldset>
 									
 									<div className="clearfix py-2">

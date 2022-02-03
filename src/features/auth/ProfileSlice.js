@@ -9,7 +9,8 @@ export const ProfileSlice = createSlice({
 		username: '',
 		firstName: '',
 		lastName: '',
-		email: ''
+		email: '',
+		id: ''
 	},
 	reducers: {
 		switchProfile: (state, action) => {

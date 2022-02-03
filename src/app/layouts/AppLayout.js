@@ -7,8 +7,11 @@ import Notifications from "../../components/common/Notifications";
 import AuthService from "../../features/auth/AuthService";
 import {useDispatch, useSelector} from "react-redux";
 import {switchProfile} from "../../features/auth/ProfileSlice";
-import {Button} from "react-bootstrap";
+import {Button, Container, Row} from "react-bootstrap";
 import {manualToggle} from "../../features/General";
+import ClientHeader from "../../components/client/ClientHeader";
+import ClientFooter from "../../components/client/ClientFooter";
+import "../../App.css"
 
 function AppLayout(props) {
 	
@@ -27,16 +30,28 @@ function AppLayout(props) {
 		console.log("please update stored profile")
 	}
 	
-	if(profile.role.name==='ADMIN') {
+	if(profile.role.name==='ADMIN' || profile.role.name==='SUPER_ADMIN') {
 		return (
 			<React.Fragment>
 				<Sidebar/>
 				<Header {...props} />
-				<MainContent/>
+				<MainContent profile={profile}/>
 				<div className="overlay toggle-icon" onClick={()=>dispatch(manualToggle())}/>
 				<Footer/>
 				<Notifications/>
 			</React.Fragment>
+		)
+	}
+	else if(profile.role.name==='MANAGER') {
+		return (
+			<Container className={'client bg-white'}>
+				<Row>
+					<ClientHeader {...props} />
+					<MainContent profile={profile} style={{marginLeft:'0'}}/>
+				</Row>
+				<ClientFooter />
+				<Notifications/>
+			</Container>
 		)
 	}
 	else{

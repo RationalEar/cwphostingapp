@@ -69,7 +69,7 @@ function Pages(props) {
 							</span>
 						</div>
 						<div className="ms-auto">
-							<Link to={'/pages/create'} className="btn btn-primary radius-30 mt-2 mt-lg-0">
+							<Link to={'/admin/pages/create'} className="btn btn-primary radius-30 mt-2 mt-lg-0">
 								<i className="bx bxs-plus-square"/>Add New Page
 							</Link>
 						</div>
@@ -101,8 +101,8 @@ function Pages(props) {
 									<td><StatusPill status={item.pgGallery} /></td>
 									<td>
 										<div className="d-flex order-actions">
-											<Link to={'/pages/edit/'+item.pgId} className=""><i className='bx bxs-edit'/></Link>
-											<Link to={'/pages/remove/'+item.pgId} className="ms-3"><i className='bx bxs-trash'/></Link>
+											<Link to={'/admin/pages/edit/'+item.pgId} className=""><i className='bx bxs-edit'/></Link>
+											<Link to={'/admin/pages/remove/'+item.pgId} className="ms-3"><i className='bx bxs-trash'/></Link>
 										</div>
 									</td>
 								</tr>)

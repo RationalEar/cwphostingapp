@@ -3,6 +3,7 @@ import {paymentSchema} from "./leaseFields";
 import {Form, Formik} from "formik";
 import {Alert, Button, Form as BSForm, Modal, Spinner} from "react-bootstrap";
 import CurrencySelect from "../CurrencySelect";
+import {ShortDateString} from "./leaseFields";
 
 function PaymentForm(props){
 	const handleSubmit = (values, FormikBag) => {
@@ -20,6 +21,14 @@ function PaymentForm(props){
 					<Modal.Body className="m-0">
 						{ props.alert && <Alert variant={'warning'} onClose={() => props.setAlert('')} dismissible>{props.alert}</Alert> }
 						<fieldset className={'row'}>
+							<BSForm.Group className="col-6 mb-3">
+								<label>Invoice Date</label>
+								<div className="form-control text-muted fw-bold"><ShortDateString date={props.invoice.invoiceDate} /></div>
+							</BSForm.Group>
+							<BSForm.Group className="col-6 mb-3">
+								<label>Due Date</label>
+								<div className="form-control text-muted fw-bold"><ShortDateString date={props.invoice.invoiceDueDate} /></div>
+							</BSForm.Group>
 							<BSForm.Group className="col-6 mb-3">
 								<label htmlFor="currency">Currency</label>
 								<CurrencySelect

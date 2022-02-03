@@ -39,7 +39,7 @@ function CreateLease(props) {
 		amount: '',
 		// paymentsDue: '',
 		dueIn: '',
-		gracePeriod: '',
+		gracePeriod: 0,
 		leaseAgreement: '',
 		// comments: [''],
 		paymentSchedule: {

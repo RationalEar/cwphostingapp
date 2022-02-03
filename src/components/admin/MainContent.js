@@ -1,6 +1,7 @@
 import React, {Suspense} from 'react';
 import {Route, Switch} from "react-router-dom";
 import routes from "../../helpers/routes";
+import LandlordHeader from "../client/landlord/LandlordHeader";
 const NotFound = React.lazy(()=>import('../misc/NotFound'))
 
 const loading = (
@@ -10,9 +11,10 @@ const loading = (
 		</div>
 	</div>)
 
-function MainContent() {
+function MainContent({profile}) {
 	return (
 		<div className="page-wrapper">
+			{profile.role.name==='MANAGER' && <LandlordHeader/>}
 			<div className="page-content">
 				<Suspense fallback={loading}>
 					<Switch>

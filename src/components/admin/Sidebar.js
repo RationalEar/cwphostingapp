@@ -15,7 +15,7 @@ const Sidebar = () => {
 				</div>
 				<div>
 					<h4 className="logo-text">
-						<NavLink to={'/'}>AppAdmin</NavLink>
+						<NavLink to={'/admin'}>AppAdmin</NavLink>
 					</h4>
 				</div>
 				<div className="toggle-icon ms-auto" onClick={()=>dispatch(manualToggle())}>
@@ -24,19 +24,19 @@ const Sidebar = () => {
 			</div>
 			<MetisMenu className="metismenu" id="menu">
 				<li>
-					<NavLink to="/" >
+					<NavLink to="/admin" >
 						<div className="parent-icon"><i className='bx bx-home'/></div>
 						<div className="menu-title">Dashboard</div>
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/leases" >
+					<NavLink to="/admin/leases" >
 						<div className="parent-icon"><i className='bx bxs-file'/></div>
 						<div className="menu-title">Leases</div>
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/properties" >
+					<NavLink to="/admin/properties" >
 						<div className="parent-icon"><i className='bx bx-building-house'/></div>
 						<div className="menu-title">Properties</div>
 					</NavLink>
@@ -53,13 +53,13 @@ const Sidebar = () => {
 					</ul>
 				</li>*/}
 				<li>
-					<a href={'/users'} className="has-arrow">
+					<a href={'/admin/users'} className="has-arrow">
 						<div className="parent-icon"><i className='bx bx-user'/></div>
 						<div className="menu-title">User Management</div>
 					</a>
 					<ul>
-						<li><NavLink to="/users"><i className="bx bx-right-arrow-alt"/>Users</NavLink></li>
-						<li><NavLink to="/roles"><i className="bx bx-right-arrow-alt"/>Roles</NavLink></li>
+						<li><NavLink to="/admin/users"><i className="bx bx-right-arrow-alt"/>Users</NavLink></li>
+						<li><NavLink to="/admin/roles"><i className="bx bx-right-arrow-alt"/>Roles</NavLink></li>
 						<li><NavLink to="/profile"><i className="bx bx-right-arrow-alt"/>My Profile</NavLink></li>
 						
 					</ul>

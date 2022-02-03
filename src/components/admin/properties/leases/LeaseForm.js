@@ -182,6 +182,11 @@ function LeaseForm(props){
 									} )}
 								</BSForm.Select>
 							</BSForm.Group>
+							
+							<BSForm.Group className="col-6 mb-3">
+								<label htmlFor="gracePeriod">Grace Period (Days)</label>
+								<BSForm.Control  id="gracePeriod" name="gracePeriod" type="number" min={0} max={100} value={values.gracePeriod} onChange={handleChange} />
+							</BSForm.Group>
 						
 						</fieldset>
 					</Modal.Body>

@@ -201,7 +201,7 @@ function Lease() {
 						</div>
 						<div className="ms-2">
 							<h6 className="mb-0 font-14">
-								<NavLink to={'/leases/'+lease.id}>{lease.id.substr(0,8)}</NavLink>
+								<NavLink to={'/admin/leases/'+lease.id}>{lease.id.substr(0,8)}</NavLink>
 							</h6>
 						</div>
 					</div>
@@ -230,7 +230,7 @@ function Lease() {
 					<ShortDateString date={lease.endDate} />
 				</td>
 				<td>
-					<NavLink to={'/leases/'+lease.id} className="btn btn-primary btn-sm radius-30 px-4">View Details</NavLink>
+					<NavLink to={'/admin/leases/'+lease.id} className="btn btn-primary btn-sm radius-30 px-4">View Details</NavLink>
 				</td>
 				<td>
 					<div className="d-flex order-actions">

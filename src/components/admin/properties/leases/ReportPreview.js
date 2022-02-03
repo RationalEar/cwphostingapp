@@ -76,37 +76,39 @@ function ReportPreview(props) {
 				const {ctx, chartArea:{width,height}} = chart
 				chart.data.datasets.forEach((dataset, i)=>{
 					chart.getDatasetMeta(i).data.forEach((dataPoint, index)=>{
-						const {x,y} = dataPoint.tooltipPosition()
-						// ctx.fillStyle = dataset.backgroundColor[index]
-						// ctx.fill()
-						// ctx.fillRect(x,y, 10, 10)
-						const halfHeight = height / 2
-						const halfWidth = width / 2
-						// console.log(chart.data.labels[index], ': Width = ', width,' halfWidth = ', halfWidth,' X = ', x)
-						const xLine = x-75 >= halfWidth ? x+20 : x-20
-						const yLine = y-60 >= halfHeight ? y+20 : y-20
-						const xLine2 = x-75 >= halfWidth ? xLine+15 : xLine-15
-						
-						// console.log(dataset.data[index])
-						// draw line
-						ctx.beginPath()
-						ctx.moveTo(x, y)
-						ctx.lineTo(xLine, yLine)
-						ctx.lineTo(xLine2, yLine)
-						ctx.strokeStyle = dataset.backgroundColor[index]
-						ctx.stroke()
-						
-						// draw text
-						// const textWidth = ctx.measureText(chart.data.labels[index])
-						ctx.font = '15px Arial'
-						
-						// text position
-						const textSpacing = x-75 >= halfWidth ? 5 : -5
-						ctx.textAlign = x-75 >= halfWidth ? 'left' : 'right'
-						ctx.textBaseline = 'middle'
-						// ctx.fillText(chart.data.labels[index] + ' ('+dataset.data[index]+'%)', xLine2 + textSpacing, yLine)
-						ctx.fillText(dataset.data[index]+'%', xLine2 + textSpacing, yLine)
-						// ctx.fillText(dataset.data[index]+'%', x , y)
+						if(dataset.data[index]>0) {
+							const {x, y} = dataPoint.tooltipPosition()
+							// ctx.fillStyle = dataset.backgroundColor[index]
+							// ctx.fill()
+							// ctx.fillRect(x,y, 10, 10)
+							const halfHeight = height / 2
+							const halfWidth = width / 2
+							// console.log(chart.data.labels[index], ': Width = ', width,' halfWidth = ', halfWidth,' X = ', x)
+							const xLine = x - 75 >= halfWidth ? x + 20 : x - 20
+							const yLine = y - 60 >= halfHeight ? y + 20 : y - 20
+							const xLine2 = x - 75 >= halfWidth ? xLine + 15 : xLine - 15
+							
+							// console.log(dataset.data[index])
+							// draw line
+							ctx.beginPath()
+							ctx.moveTo(x, y)
+							ctx.lineTo(xLine, yLine)
+							ctx.lineTo(xLine2, yLine)
+							ctx.strokeStyle = dataset.backgroundColor[index]
+							ctx.stroke()
+							
+							// draw text
+							// const textWidth = ctx.measureText(chart.data.labels[index])
+							ctx.font = '15px Arial'
+							
+							// text position
+							const textSpacing = x - 75 >= halfWidth ? 5 : -5
+							ctx.textAlign = x - 75 >= halfWidth ? 'left' : 'right'
+							ctx.textBaseline = 'middle'
+							// ctx.fillText(chart.data.labels[index] + ' ('+dataset.data[index]+'%)', xLine2 + textSpacing, yLine)
+							ctx.fillText(dataset.data[index] + '%', xLine2 + textSpacing, yLine)
+							// ctx.fillText(dataset.data[index]+'%', x , y)
+						}
 					})
 				})
 			}
@@ -239,7 +241,7 @@ function ReportPreview(props) {
 													{lease.currency} {lease.amount.toFixed(2)} every {lease.paymentSchedule.repeatEvery===1?'':lease.paymentSchedule.repeatEvery}
 													{lease.paymentSchedule.cycle.toLowerCase()} {lease.paymentSchedule.repeatEvery===1?'':'s'}
 												</td>
-												<td>Last Payment Date</td><td><ShortDateString date={lease.lastInvoiceDate} /></td>
+												<td>Last Payment Date</td><td>{lease.lastInvoiceDate?<ShortDateString date={lease.lastInvoiceDate} />:'--/--/--'}</td>
 											</tr>
 											<tr>
 												<td>Amount Paid</td>
