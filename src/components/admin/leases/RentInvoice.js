@@ -1,12 +1,12 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Button, Table} from "react-bootstrap";
-import Breadcrumbs from "../../../misc/Breadcrumbs";
+import Breadcrumbs from "../../misc/Breadcrumbs";
 import {useHistory, useParams} from "react-router-dom";
 import {ShortDateString} from "./leaseFields";
 import CreatePayment from "./CreatePayment";
-import {setInfo, setWarning} from "../../../../features/notifications/NotificationSlice";
+import {setInfo, setWarning} from "../../../features/notifications/NotificationSlice";
 import {useDispatch} from "react-redux";
-import {get_axios_error} from "../../../../helpers/general";
+import {get_axios_error} from "../../../helpers/general";
 
 function RentInvoice(){
 	const { id } = useParams();

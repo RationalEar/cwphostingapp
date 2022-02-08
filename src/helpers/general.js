@@ -1,8 +1,19 @@
-import {useDispatch} from "react-redux";
-import {useLocation} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {useHistory, useLocation} from "react-router-dom";
 import React from "react";
+import {pdfHtml} from "../components/admin/leases/pdfHtml";
 export const SetMessage = (message, flag) => {
 	useDispatch({type: 'pushToast', payload: message, flag: flag})
+}
+
+export const useIsAdmin = () => {
+	const profile = useSelector((state) => state.profile)
+	return profile && (profile.role.name==='ADMIN' || profile.role.name==='SUPER_ADMIN' )
+}
+
+export const useIsAdminPath = () => {
+	const history = useHistory()
+	return useIsAdmin() && history.location.pathname.includes('/admin/')
 }
 
 export function get_axios_error(error){
@@ -74,4 +85,45 @@ export const convertSort = (data) => {
 
 export const leftPad = (num, length) => {
 	return num.toString().padStart(length, 0);
+}
+
+export const generatePdf = (frameRef, fileName) => {
+	const doc = frameRef.current.contentWindow.document
+	const body = doc.body
+	const canvases = doc.querySelectorAll('.canvas')
+	canvases.forEach( (div)=>{
+		const canvas = div.querySelector('canvas')
+		if(canvas){
+			const src = canvas.toDataURL('image/png', 1.0)
+			div.innerHTML = '<img alt="canvas" src="'+src+'" />'
+		}
+	})
+	const html = pdfHtml.replace('HTML_BODY', body.innerHTML)
+	window.axios.post('report/pdf', {name: fileName, html:html})
+		.then(response=>{
+			downloadPdf(response.data, fileName)
+		})
+		.catch(error=>{
+			console.log(error)
+		})
+}
+
+const downloadPdf = (file, fileName) => {
+	window.axios.get('report/pdf?file='+file, {responseType: 'arraybuffer', headers: {'Accept': 'application/pdf'}})
+		.then(response=>{
+			const file = 'tenant-report-'+fileName.substr(0,8)+'.pdf'
+			
+			const blob = new Blob([response.data], { type: 'application/pdf' })
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', file);
+			const links = document.getElementById("download-link");
+			links.appendChild(link);
+			link.click();
+			links.innerHTML = ''
+		})
+		.catch(error=>{
+			console.log(error)
+		})
 }

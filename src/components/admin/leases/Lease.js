@@ -1,13 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import Breadcrumbs from "../../../misc/Breadcrumbs";
+import Breadcrumbs from "../../misc/Breadcrumbs";
 import {debounce} from "lodash";
-import Pagination from "../../../common/Pagination";
-import PageLimit from "../../../common/PageLimit";
-import '../../users/Users.css'
+import Pagination from "../../common/Pagination";
+import PageLimit from "../../common/PageLimit";
+import '../users/Users.css'
 import {Button, Spinner} from "react-bootstrap";
 import {useDispatch} from "react-redux";
-import {setInfo, setWarning} from "../../../../features/notifications/NotificationSlice";
-import {convertSort, get_axios_error, useQuery} from "../../../../helpers/general";
+import {setInfo, setWarning} from "../../../features/notifications/NotificationSlice";
+import {convertSort, get_axios_error, useIsAdminPath, useQuery} from "../../../helpers/general";
 import {NavLink, useHistory} from "react-router-dom";
 import CreateLease from "./CreateLease";
 import EditLease from "./EditLease";
@@ -30,7 +30,7 @@ function Lease() {
 	const [loading, setLoading] = useState(false)
 	const [fetched, setFetched] = useState(false)
 	const [leaseOptionsFetched, setLeaseOptionsFetched] = useState(false)
-	
+	const isAdminPath = useIsAdminPath()
 	const [show, setShow] = useState(false)
 	const [modal, setModal] = useState('')
 	const handleClose = () => {
@@ -325,9 +325,9 @@ function Lease() {
 	return (
 		<React.Fragment>
 			<Breadcrumbs category={'Lease Management'} title={'Leases'}>
-				<button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createLease}>
+				{isAdminPath ? <button type={'button'} className="btn btn-primary radius-30 mt-2 mt-lg-0" onClick={createLease}>
 					<i className="bx bxs-plus-square"/>Add New Lease
-				</button>
+				</button> : <NavLink to={'/leases/start'} className="btn btn-primary radius-30 mt-2 mt-lg-0"><i className="bx bxs-plus-square"/>Add New Lease</NavLink>}
 			</Breadcrumbs>
 			<div className="card">
 				<div className="card-body">

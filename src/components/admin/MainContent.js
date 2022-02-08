@@ -2,6 +2,7 @@ import React, {Suspense} from 'react';
 import {Route, Switch} from "react-router-dom";
 import routes from "../../helpers/routes";
 import LandlordHeader from "../client/landlord/LandlordHeader";
+import Page from "./Page";
 const NotFound = React.lazy(()=>import('../misc/NotFound'))
 
 const loading = (
@@ -25,7 +26,7 @@ function MainContent({profile}) {
 									path={route.path}
 									exact={route.exact}
 									name={route.name}
-									render={ props => (<route.component {...props} />) }
+									render={ props => (<Page title={route.name}><route.component {...props} /></Page>) }
 								/>
 							)
 						})}

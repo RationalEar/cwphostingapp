@@ -1,8 +1,8 @@
 import {Modal} from "react-bootstrap";
 import React, {useState} from "react";
-import {get_axios_error, leftPad} from "../../../../helpers/general";
+import {get_axios_error, leftPad} from "../../../helpers/general";
 import {useDispatch, useSelector} from "react-redux";
-import { setInfo} from "../../../../features/notifications/NotificationSlice";
+import { setInfo} from "../../../features/notifications/NotificationSlice";
 import './Lease.css'
 import PaymentForm from "./PaymentForm";
 

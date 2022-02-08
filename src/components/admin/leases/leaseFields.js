@@ -1,7 +1,7 @@
 import * as yup from "yup"
 import {range} from "lodash";
 import React from "react";
-import {leftPad} from "../../../../helpers/general";
+import {leftPad} from "../../../helpers/general";
 
 export const schema = yup.object().shape({
 	tenantId: yup.string().required(),
@@ -92,4 +92,28 @@ export const ShortDateTime = (props) => {
 	let date = new Date(props.date)
 	const d = leftPad(date.getDate(),2) + '/' + leftPad(date.getMonth() + 1,2) + '/' + date.getFullYear()
 	return d + ', '+ leftPad(date.getHours(),2) + ':'+leftPad(date.getMinutes(),2)
+}
+
+export const initialValues = {
+	tenantId: '',
+	propertyId: '',
+	startDate: '',
+	endDate: '',
+	billFrom: '',
+	currency: '',
+	status: '',
+	deposit: '',
+	amount: '',
+	// paymentsDue: '',
+	dueIn: '',
+	gracePeriod: 0,
+	leaseAgreement: '',
+	// comments: [''],
+	paymentSchedule: {
+		cycle: 'MONTH',
+		repeatEvery: 1,
+		dayOfWeek: 1,
+		dayOfMonth: 0,
+		monthOfYear: 0
+	}
 }

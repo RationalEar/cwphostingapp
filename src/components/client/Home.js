@@ -14,7 +14,7 @@ const Home = () => {
 						<NavLink to={'/leases'} className="btn btn-lg btn-primary fw-500 me-3">Record Payment
 							<i className="bx bx-right-arrow-alt" />
 						</NavLink>
-						<NavLink to={'/'} className="btn btn-lg btn-outline-info text-light fw-500">Request Payment History</NavLink>
+						<NavLink to={'/buy-report'} className="btn btn-lg btn-info text-light fw-500">Request Payment History</NavLink>
 					</div>
 					<div data-aos="fade-up" data-aos-delay="50" className="col-lg-6 d-none d-lg-block aos-init aos-animate">
 						<img src={"/assets/images/report.svg"} className="img-fluid"  alt="home"/>

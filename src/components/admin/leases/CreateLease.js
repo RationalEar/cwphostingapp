@@ -1,10 +1,11 @@
 import {Modal} from "react-bootstrap";
 import React, {useState} from "react";
-import {get_axios_error} from "../../../../helpers/general";
+import {get_axios_error} from "../../../helpers/general";
 import {useDispatch} from "react-redux";
-import { setInfo} from "../../../../features/notifications/NotificationSlice";
+import { setInfo} from "../../../features/notifications/NotificationSlice";
 import './Lease.css'
 import LeaseForm from "./LeaseForm";
+import {initialValues} from "./leaseFields";
 
 function CreateLease(props) {
 	
@@ -25,30 +26,6 @@ function CreateLease(props) {
 				setAlert(e.message)
 				FormikBag.setSubmitting(false)
 			})
-	}
-	
-	const initialValues = {
-		tenantId: '',
-		propertyId: '',
-		startDate: '',
-		endDate: '',
-		billFrom: '',
-		currency: '',
-		status: '',
-		deposit: '',
-		amount: '',
-		// paymentsDue: '',
-		dueIn: '',
-		gracePeriod: 0,
-		leaseAgreement: '',
-		// comments: [''],
-		paymentSchedule: {
-			cycle: 'MONTH',
-			repeatEvery: 1,
-			dayOfWeek: 1,
-			dayOfMonth: 0,
-			monthOfYear: 0
-		}
 	}
 	
 	return (

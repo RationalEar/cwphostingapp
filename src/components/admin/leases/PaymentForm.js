@@ -2,7 +2,7 @@ import React from "react";
 import {paymentSchema} from "./leaseFields";
 import {Form, Formik} from "formik";
 import {Alert, Button, Form as BSForm, Modal, Spinner} from "react-bootstrap";
-import CurrencySelect from "../CurrencySelect";
+import CurrencySelect from "../properties/CurrencySelect";
 import {ShortDateString} from "./leaseFields";
 
 function PaymentForm(props){

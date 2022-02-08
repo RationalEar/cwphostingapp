@@ -13,7 +13,7 @@ function LandlordHeader() {
 	
 	const countProperties = useCallback(() => {
 		setFetched(true)
-		window.axios.get('properties/stats')
+		window.axios.get('report/stats')
 			.then(response=>{
 				setStats(response.data)
 			})

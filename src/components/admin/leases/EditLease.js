@@ -1,8 +1,8 @@
 import {Modal} from "react-bootstrap";
 import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import {setError, setInfo, setWarning} from "../../../../features/notifications/NotificationSlice";
-import {get_axios_error} from "../../../../helpers/general";
+import {setError, setInfo, setWarning} from "../../../features/notifications/NotificationSlice";
+import {get_axios_error} from "../../../helpers/general";
 import LeaseForm from "./LeaseForm";
 
 function EditLease(props){

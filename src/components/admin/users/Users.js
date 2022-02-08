@@ -310,7 +310,7 @@ function Users() {
 							<input className="form-check-input me-3" type="checkbox" value="" aria-label="..." />
 						</div>
 						<div className="ms-2">
-							<h6 className="mb-0 font-14">{user.id.substr(0,6)}</h6>
+							<h6 className="mb-0 font-14">{user.id.substr(0,8)}</h6>
 						</div>
 					</div>
 				</td>

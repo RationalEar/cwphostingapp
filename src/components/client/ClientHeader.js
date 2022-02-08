@@ -63,19 +63,18 @@ function ClientHeader(props) {
 								<Nav.Item>
 									<NavLink to={'/leases'} className="nav-link"><i className='bx bx-file me-1'/>My Leases</NavLink>
 								</Nav.Item>
+								<Nav.Item>
+									<NavLink to={'/orders'} className="nav-link"><i className='bx bx-list-ul me-1'/>My Orders</NavLink>
+								</Nav.Item>
 							</React.Fragment>}
-							<Nav.Item>
-								<NavLink to={'/about'} className="nav-link"><i className='bx bx-user me-1'/>About</NavLink>
-							</Nav.Item>
-							<Nav.Item>
+							{/*<Nav.Item>
 								<NavLink to={'/contact'} className="nav-link"><i className='bx bx-microphone me-1'/>Contact</NavLink>
-							</Nav.Item>
+							</Nav.Item>*/}
 							<Nav.Item>
 								<NavDropdown title={profile.firstName}>
 									<Dropdown.Toggle as={"a"} role="button" className="nav-link dropdown-toggle-nocaret">
-										{/*<img src={'/assets/images/avatars/avatar-2.png'} className="user-img" alt="user avatar"/>*/}
 										<span className="user-img">
-											<i className="bx bx-user-circle"/> {profile.firstName}
+											<i className='bx bx-user me-1'/> {profile.firstName}
 										</span>
 									</Dropdown.Toggle>
 									<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-end" data-bs-poper="none">

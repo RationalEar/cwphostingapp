@@ -30,6 +30,12 @@ const Sidebar = () => {
 					</NavLink>
 				</li>
 				<li>
+					<NavLink to="/admin/orders" >
+						<div className="parent-icon"><i className='bx bx-archive-in'/></div>
+						<div className="menu-title">Orders</div>
+					</NavLink>
+				</li>
+				<li>
 					<NavLink to="/admin/leases" >
 						<div className="parent-icon"><i className='bx bxs-file'/></div>
 						<div className="menu-title">Leases</div>

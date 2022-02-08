@@ -1,17 +1,15 @@
 import {Button, Card, Row, Table} from "react-bootstrap";
 import React, {useCallback, useEffect, useState} from "react";
 import {NavLink, useHistory, useParams} from "react-router-dom";
-import Breadcrumbs from "../../../misc/Breadcrumbs";
-import {get_axios_error, leftPad} from "../../../../helpers/general";
-import {setWarning} from "../../../../features/notifications/NotificationSlice";
+import Breadcrumbs from "../../misc/Breadcrumbs";
+import {get_axios_error, leftPad} from "../../../helpers/general";
+import {setWarning} from "../../../features/notifications/NotificationSlice";
 import {useDispatch} from "react-redux";
 import EditLease from "./EditLease";
 import {PaymentSchedule, ShortDateString, ShortDateTime} from "./leaseFields";
-import Pagination from "../../../common/Pagination";
-import PageLimit from "../../../common/PageLimit";
+import Pagination from "../../common/Pagination";
+import PageLimit from "../../common/PageLimit";
 import CreatePayment from "./CreatePayment";
-import ReportPreview from "./ReportPreview";
-import ReportPdf from "./ReportPdf";
 
 function ViewLease(){
 	const { id } = useParams();
@@ -51,12 +49,6 @@ function ViewLease(){
 	const recordPayment = (invoice) => {
 		setCurrentInvoice(invoice)
 		setModal('record')
-		setShow(true)
-		return false
-	}
-	
-	const previewReport = () => {
-		setModal('report')
 		setShow(true)
 		return false
 	}
@@ -145,24 +137,6 @@ function ViewLease(){
 				modal==='record' ? <CreatePayment invoice={currentInvoice} lease={lease} onHide={handleClose}
 												  show={show} onRefresh={()=>setInvoicesFetched(false)}
 												  currencies={options.currencies} paymentMethods={options.paymentMethods} /> : null
-			)
-		}
-		else return null
-	}
-	
-	const ReportModal = function (){
-		if(lease) {
-			return (
-				modal === 'report' ? <ReportPreview onHide={handleClose} show={show} leaseId={lease.id}/> : null
-			)
-		}
-		else return null
-	}
-	
-	const PdfDocument = function (){
-		if(lease) {
-			return (
-				modal === 'reportPdf' ? <ReportPdf onHide={handleClose} show={show} leaseId={lease.id}/> : null
 			)
 		}
 		else return null
@@ -259,10 +233,6 @@ function ViewLease(){
 											&nbsp;&nbsp;&nbsp;
 											<button className="btn btn-outline-primary mb-2"><i
 												className="bx bxs-envelope"/> Message Owner / Agent
-											</button>
-											&nbsp;&nbsp;&nbsp;
-											<button className="btn btn-outline-primary mb-2" onClick={previewReport}><i
-												className="bx bx-chart"/> Preview Report
 											</button>
 										</div>
 									</div>
@@ -382,8 +352,6 @@ function ViewLease(){
 				</Row>
 				<EditModal />
 				<PaymentModal />
-				<ReportModal />
-				<PdfDocument />
 				<div className={'align-content-end text-end mt-5'}>
 					<Button type={'button'} variant={'outline-secondary'} onClick={history.goBack}>Back</Button>
 				</div>

@@ -1,0 +1,7 @@
+.input-group .form-control{
+    border-left-width: 0;
+}
+
+.input-group .form-control.is-invalid{
+    border-left-width: 1px;
+}
